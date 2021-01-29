@@ -1,0 +1,6 @@
+Zum kompilieren der TFT_eSPI Bibliothek
+muss, nach dem herunterladen der
+Abhängigkeiten (libdeps) die Standard-
+Config "User_Setup.h" aus dem Ordner
+"\\.pio\libdeps\esp32\TFT_eSPI\"
+entfernt werden!!!
