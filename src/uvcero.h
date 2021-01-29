@@ -7,6 +7,7 @@
 
 #define LAMP_SWITCH_PIN 13
 #define FAN_PWM_PIN 15
+#define SDCARD_CS 2
 
 #define FAN_CALIBRATED_OFF 0       /* 0/3 */
 #define FAN_CALIBRATED_LOW 85      /* 1/3 */
