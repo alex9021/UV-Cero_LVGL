@@ -4,25 +4,19 @@ TaskHandle_t thGUI;
 TaskHandle_t thSensors;
 TaskHandle_t thFanController;
 TaskHandle_t thLampController;
+TaskHandle_t thRTCUpdater;
 
 QueueHandle_t xFAN_SPEED;
 
 uint8_t currentFanSpeed = FAN_SPEED_HIGH;
 uint8_t currentLampState = LAMPS_OFF;
 
-TFT_eSPI tft = TFT_eSPI(); /* TFT instance */
+PCF8574 gpio_expander(I2C_ADDR_PCF);
+uRTCLib rtc(I2C_ADDR_RTC);
+
+TFT_eSPI tft = TFT_eSPI();
 static lv_disp_buf_t disp_buf;
 static lv_color_t buf[LV_HOR_RES_MAX * 10];
-
-#if USE_LV_LOG != 0
-/* Serial debugging */
-void my_print(lv_log_level_t level, const char *file, uint32_t line, const char *dsc)
-{
-
-    Serial.printf("%s@%d->%s\r\n", file, line, dsc);
-    Serial.flush();
-}
-#endif
 
 /* Display flushing */
 void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
@@ -121,10 +115,6 @@ void guiTaskLoop(void *parameter)
 {
     lv_init();
 
-#if USE_LV_LOG != 0
-    lv_log_register_print_cb(my_print); /* register print function for debugging */
-#endif
-
     tft.begin();        /* TFT init */
     tft.setRotation(1); /* Landscape orientation */
 
@@ -173,18 +163,29 @@ void guiTaskLoop(void *parameter)
 
 void sensorsTaskLoop(void *parameter)
 {
+    gpio_expander.pinMode(P0, INPUT_PULLUP); /* FAN 1 SPEED */
+    gpio_expander.pinMode(P1, INPUT_PULLUP); /* FAN 2 SPEED */
+    gpio_expander.pinMode(P2, INPUT_PULLUP); /* FAN 3 SPEED */
+    gpio_expander.pinMode(P3, INPUT_PULLUP); /* FAN 4 SPEED */
+
+    gpio_expander.pinMode(P7, INPUT_PULLDOWN); /* LAMP 1 STATE */
+    gpio_expander.pinMode(P6, INPUT_PULLDOWN); /* LAMP 2 STATE */
+    gpio_expander.pinMode(P5, INPUT_PULLDOWN); /* LAMP 3 STATE */
+    gpio_expander.pinMode(P4, INPUT_PULLDOWN); /* LAMP 4 STATE */
+
+    gpio_expander.begin();
+
     for (;;)
     {
-        for (int i = 0; i < 4; i++)
-        {
-            lamps[i]->setCurrentLumen(random(0, 1000));
-        }
+        fans[0]->setCurrentRPM(gpio_expander.digitalRead(P0));
+        fans[1]->setCurrentRPM(gpio_expander.digitalRead(P1));
+        fans[2]->setCurrentRPM(gpio_expander.digitalRead(P2));
+        fans[3]->setCurrentRPM(gpio_expander.digitalRead(P3));
 
-        for (int i = 0; i < 4; i++)
-        {
-            fans[i]->setCurrentRPM(random(0, 10000));
-        }
-        delay(200);
+        lamps[0]->setCurrentLumen(random(0,1));  /* (gpio_expander.digitalRead(P4)); */
+        lamps[1]->setCurrentLumen(random(0,1));  /* (gpio_expander.digitalRead(P5)); */
+        lamps[2]->setCurrentLumen(random(0,1));  /* (gpio_expander.digitalRead(P6)); */
+        lamps[3]->setCurrentLumen(random(0,1));  /* (gpio_expander.digitalRead(P7)); */
     }
 }
 
@@ -240,3 +241,15 @@ void lampControllerTaskLoop(void *parameter)
         delay(1000);
     }
 }
+
+void rtcUpdaterTaskLoop(void *parameter)
+{
+    rtc.set(0, 42, 16, 6, 2, 5, 15);
+
+    for (;;)
+    {
+        rtc.refresh();
+        delay(100);
+    }
+}
+

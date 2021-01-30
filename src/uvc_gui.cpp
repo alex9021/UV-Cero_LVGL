@@ -28,6 +28,8 @@ static lv_obj_t *lamp_lm_4;
 static lv_style_t style_box;
 
 lv_disp_size_t disp_size = LV_DISP_SIZE_SMALL;
+lv_obj_t *timerButtons[MAX_TIMER_COUNT];
+lv_obj_t *timerLabels[MAX_TIMER_COUNT];
 
 static void create_controls(lv_obj_t *parent);
 static void create_fans_status(lv_obj_t *parent);
@@ -63,10 +65,10 @@ void create_gui(void)
     /* show splash screen */
     lv_obj_t *splashscreen = lv_img_create(lv_scr_act(), NULL);
     lv_img_set_src(splashscreen, &logo_dark);
-    
+
     lv_obj_t *splashscreen_light = lv_img_create(lv_scr_act(), NULL);
     lv_img_set_src(splashscreen_light, &logo_light);
-    
+
     lv_obj_fade_out(splashscreen, 0, 4000);
     lv_obj_fade_out(splashscreen_light, 0, 2000);
 
@@ -192,7 +194,7 @@ static void create_lamps_status(lv_obj_t *parent)
 
     lamp_lm_1 = lv_bar_create(h, NULL);
     lv_obj_set_size(lamp_lm_1, 170, 20);
-    lv_bar_set_range(lamp_lm_1, 0, 1000);
+    lv_bar_set_range(lamp_lm_1, 0, 1);
     lv_bar_set_anim_time(lamp_lm_1, 200);
     lv_bar_set_value(lamp_lm_1, lamps[0]->getCurrentLumen(), LV_ANIM_ON);
 
@@ -201,7 +203,7 @@ static void create_lamps_status(lv_obj_t *parent)
 
     lamp_lm_2 = lv_bar_create(h, NULL);
     lv_obj_set_size(lamp_lm_2, 170, 20);
-    lv_bar_set_range(lamp_lm_2, 0, 1000);
+    lv_bar_set_range(lamp_lm_2, 0, 1);
     lv_bar_set_anim_time(lamp_lm_2, 200);
     lv_bar_set_value(lamp_lm_2, lamps[1]->getCurrentLumen(), LV_ANIM_ON);
 
@@ -210,7 +212,7 @@ static void create_lamps_status(lv_obj_t *parent)
 
     lamp_lm_3 = lv_bar_create(h, NULL);
     lv_obj_set_size(lamp_lm_3, 170, 20);
-    lv_bar_set_range(lamp_lm_3, 0, 1000);
+    lv_bar_set_range(lamp_lm_3, 0, 1);
     lv_bar_set_anim_time(lamp_lm_3, 200);
     lv_bar_set_value(lamp_lm_3, lamps[2]->getCurrentLumen(), LV_ANIM_ON);
 
@@ -219,17 +221,17 @@ static void create_lamps_status(lv_obj_t *parent)
 
     lamp_lm_4 = lv_bar_create(h, NULL);
     lv_obj_set_size(lamp_lm_4, 170, 20);
-    lv_bar_set_range(lamp_lm_4, 0, 1000);
+    lv_bar_set_range(lamp_lm_4, 0, 1);
     lv_bar_set_anim_time(lamp_lm_4, 200);
     lv_bar_set_value(lamp_lm_4, lamps[3]->getCurrentLumen(), LV_ANIM_ON);
 }
 
 static void create_timer_controls(lv_obj_t *parent)
 {
+
     lv_page_set_scrl_layout(parent, LV_LAYOUT_GRID);
 
-    lv_disp_size_t disp_size = lv_disp_get_size_category(NULL);
-    lv_coord_t grid_w = lv_page_get_width_grid(parent, disp_size <= LV_DISP_SIZE_SMALL ? 1 : 2, 1);
+    lv_coord_t grid_w = lv_page_get_width_grid(parent, 1, 1);
 
     lv_obj_t *h = lv_cont_create(parent, NULL);
     lv_cont_set_layout(h, LV_LAYOUT_PRETTY_TOP);
@@ -239,21 +241,24 @@ static void create_timer_controls(lv_obj_t *parent)
     lv_cont_set_fit2(h, LV_FIT_NONE, LV_FIT_TIGHT);
     lv_obj_set_width(h, grid_w);
 
-    lv_obj_t *btn_monday = lv_btn_create(h, NULL);
-    lv_obj_set_event_cb(btn_monday, NULL);
-    lv_obj_align(btn_monday, NULL, LV_ALIGN_CENTER, 0, 0);
-    lv_btn_set_fit2(btn_monday, LV_FIT_NONE, LV_FIT_TIGHT);
+    for (int i = 0; i < currentTimerItemCount; i++)
+    {
+        Serial.println(i);
+        timerButtons[i] = lv_btn_create(h, NULL);
+        lv_obj_set_event_cb(timerButtons[i], NULL);
+        lv_obj_align(timerButtons[i], NULL, LV_ALIGN_CENTER, 0, 0);
+        lv_btn_set_fit2(timerButtons[i], LV_FIT_PARENT, LV_FIT_TIGHT);
 
-    lv_obj_t *btn_monday_label = lv_label_create(btn_monday, NULL);
-    lv_label_set_text(btn_monday_label, "Monday");
+        char labelText[50];
+        sprintf(labelText, "%s %s for %dmin %s",
+                timerItems[i]->getWeekdayAsString().c_str(),
+                timerItems[i]->getStartTimeAsString().c_str(),
+                timerItems[i]->getDuration(),
+                timerItems[i]->getRepeatAsString().c_str());
 
-    lv_obj_t *btn_tuesday = lv_btn_create(h, NULL);
-    lv_obj_set_event_cb(btn_tuesday, NULL);
-    lv_obj_align(btn_tuesday, NULL, LV_ALIGN_CENTER, 0, 0);
-    lv_btn_set_fit2(btn_tuesday, LV_FIT_NONE, LV_FIT_TIGHT);
-
-    lv_obj_t *btn_tuesday_label = lv_label_create(btn_tuesday, NULL);
-    lv_label_set_text(btn_tuesday_label, "Tuesday");
+        timerLabels[i] = lv_label_create(timerButtons[i], NULL);
+        lv_label_set_text(timerLabels[i], labelText);
+    }
 }
 
 static void sensor_updater(lv_task_t *t)

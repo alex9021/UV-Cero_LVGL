@@ -18,6 +18,7 @@ void setup()
     xTaskCreatePinnedToCore(sensorsTaskLoop, "Sensors Task", 4096, NULL, 0, &thSensors, 1);
     xTaskCreatePinnedToCore(fanControllerTaskLoop, "Fan Controller Task", 4096, NULL, 0, &thFanController, 1);
     xTaskCreatePinnedToCore(lampControllerTaskLoop, "Lamp Controller Task", 4096, NULL, 0, &thLampController, 1);
+    xTaskCreatePinnedToCore(rtcUpdaterTaskLoop, "RTC Updater Task", 4096, NULL, 0, &thRTCUpdater, 1);
 }
 
 void loop()
