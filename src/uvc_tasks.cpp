@@ -69,6 +69,57 @@ bool my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
     return false; /*Return `false` because we are not buffering and no more data to read*/
 }
 
+/*
+   SD CARD
+*/
+
+lv_fs_res_t sd_open_cb(struct _lv_fs_drv_t *drv, void *file_p, const char *path, lv_fs_mode_t mode)
+{
+    lv_fs_res_t res = LV_FS_RES_NOT_IMP;
+
+    File f;
+    char buf[256];
+
+    sprintf(buf, "/%s", path);
+    Serial.print("path : ");
+    Serial.println(buf);
+
+    if (mode == LV_FS_MODE_WR)
+    {
+        f = SD.open(buf, FILE_WRITE);
+        res = LV_FS_RES_OK;
+    }
+    else if (mode == LV_FS_MODE_RD)
+    {
+        f = SD.open(buf);
+        res = LV_FS_RES_OK;
+    }
+    else if (mode == (LV_FS_MODE_WR | LV_FS_MODE_RD))
+    {
+        f = SD.open(buf, FILE_WRITE);
+        res = LV_FS_RES_OK;
+    }
+    File *fp = (File *)file_p;
+    *fp = f; // where the probleme come
+
+    return res;
+}
+
+lv_fs_res_t sd_read_cb(struct _lv_fs_drv_t *drv, void *file_p, void *buf, uint32_t btr, uint32_t *br)
+{
+    lv_fs_res_t res = LV_FS_RES_NOT_IMP;
+
+    res = LV_FS_RES_OK;
+    return res;
+}
+
+lv_fs_res_t sd_close_cb(struct _lv_fs_drv_t *drv, void *file_p)
+{
+    lv_fs_res_t res = LV_FS_RES_NOT_IMP;
+
+    return res;
+}
+
 void guiTaskLoop(void *parameter)
 {
     lv_init();
@@ -80,7 +131,7 @@ void guiTaskLoop(void *parameter)
     tft.begin();        /* TFT init */
     tft.setRotation(1); /* Landscape orientation */
 
-    uint16_t calData[5] = { 370, 3438, 303, 3430, 7 };
+    uint16_t calData[5] = {370, 3438, 303, 3430, 7};
     tft.setTouch(calData);
 
     lv_disp_buf_init(&disp_buf, buf, NULL, LV_HOR_RES_MAX * 10);
@@ -101,7 +152,18 @@ void guiTaskLoop(void *parameter)
     indev_drv.read_cb = my_touchpad_read;
     lv_indev_drv_register(&indev_drv);
 
-    showSplashScreen();
+    /* create the drive */
+    if (SD_CARD_AVAILABLE)
+    {
+        lv_fs_drv_t sd_drv;
+        lv_fs_drv_init(&sd_drv);
+        sd_drv.file_size = sizeof(File);
+        sd_drv.letter = 'S';
+        sd_drv.open_cb = sd_open_cb;
+        sd_drv.close_cb = sd_close_cb;
+        sd_drv.read_cb = sd_read_cb;
+        lv_fs_drv_register(&sd_drv);
+    }
 
     create_gui();
 

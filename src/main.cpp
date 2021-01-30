@@ -11,6 +11,8 @@ void setup()
     Serial.begin(115200);
     
     xFAN_SPEED = xQueueCreate(1, sizeof(uint8_t));
+
+    init();
     
     xTaskCreatePinnedToCore(guiTaskLoop, "GUI Task", 4096, NULL, 0, &thGUI, 1);
     xTaskCreatePinnedToCore(sensorsTaskLoop, "Sensors Task", 4096, NULL, 0, &thSensors, 1);

@@ -1,5 +1,7 @@
 #include <uvc_gui.h>
 #include <stdio.h>
+#include <uvc_assets\logo_dark.h>
+#include <uvc_assets\logo_light.h>
 
 static lv_obj_t *tv;
 static lv_obj_t *t1;
@@ -37,12 +39,8 @@ static void lamp_switch_event_cb(lv_obj_t *sw, lv_event_t event);
 
 static void sensor_updater(lv_task_t *t);
 
-void showSplashScreen(void)
-{
-    digitalWrite(TFT_BL, LOW);
-    delay(1000);
-    digitalWrite(TFT_BL, HIGH);
-}
+LV_IMG_DECLARE(logo_dark);
+LV_IMG_DECLARE(logo_light);
 
 void create_gui(void)
 {
@@ -61,6 +59,16 @@ void create_gui(void)
     create_fans_status(t2);
     create_lamps_status(t3);
     create_timer_controls(t4);
+
+    /* show splash screen */
+    lv_obj_t *splashscreen = lv_img_create(lv_scr_act(), NULL);
+    lv_img_set_src(splashscreen, &logo_dark);
+    
+    lv_obj_t *splashscreen_light = lv_img_create(lv_scr_act(), NULL);
+    lv_img_set_src(splashscreen_light, &logo_light);
+    
+    lv_obj_fade_out(splashscreen, 0, 4000);
+    lv_obj_fade_out(splashscreen_light, 0, 2000);
 
     lv_task_create(sensor_updater, 200, LV_TASK_PRIO_LOWEST, NULL);
 }
@@ -231,7 +239,7 @@ static void create_timer_controls(lv_obj_t *parent)
     lv_cont_set_fit2(h, LV_FIT_NONE, LV_FIT_TIGHT);
     lv_obj_set_width(h, grid_w);
 
-    lv_obj_t * btn_monday = lv_btn_create(h, NULL);
+    lv_obj_t *btn_monday = lv_btn_create(h, NULL);
     lv_obj_set_event_cb(btn_monday, NULL);
     lv_obj_align(btn_monday, NULL, LV_ALIGN_CENTER, 0, 0);
     lv_btn_set_fit2(btn_monday, LV_FIT_NONE, LV_FIT_TIGHT);
@@ -239,7 +247,7 @@ static void create_timer_controls(lv_obj_t *parent)
     lv_obj_t *btn_monday_label = lv_label_create(btn_monday, NULL);
     lv_label_set_text(btn_monday_label, "Monday");
 
-    lv_obj_t * btn_tuesday = lv_btn_create(h, NULL);
+    lv_obj_t *btn_tuesday = lv_btn_create(h, NULL);
     lv_obj_set_event_cb(btn_tuesday, NULL);
     lv_obj_align(btn_tuesday, NULL, LV_ALIGN_CENTER, 0, 0);
     lv_btn_set_fit2(btn_tuesday, LV_FIT_NONE, LV_FIT_TIGHT);

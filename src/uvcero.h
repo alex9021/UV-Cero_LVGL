@@ -5,6 +5,9 @@
 #include <Classes\UVC_Lamp.h>
 #include <Classes\UVC_Fan.h>
 
+#include <SD.h>
+#include <FS.h>
+
 #define LAMP_SWITCH_PIN 13
 #define FAN_PWM_PIN 15
 #define SDCARD_CS 2
@@ -38,5 +41,7 @@ extern int fanResolution;
 
 extern fan_speed_t currentFanSpeed;
 extern lamp_state_t currentLampState;
+
+extern bool SD_CARD_AVAILABLE;
 
 #endif /*UVCERO_H*/

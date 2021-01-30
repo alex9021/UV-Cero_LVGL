@@ -7,8 +7,16 @@ int fanFreq = 20000;
 int fanChannel = 0;
 int fanResolution = 8;
 
+bool SD_CARD_AVAILABLE = false;
+
 void init()
 {
+
+    Serial.print(F("Init SD card... "));
+    if (SD.begin(SDCARD_CS))
+    {
+        SD_CARD_AVAILABLE = true;
+    }
 
     /**
       @ToDo: read data from sd card
