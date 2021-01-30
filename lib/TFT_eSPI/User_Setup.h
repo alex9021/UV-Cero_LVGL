@@ -199,6 +199,8 @@
 
 #define TOUCH_CS 17     // Chip select pin (T_CS) of touch screen
 
+#define SD_CS 2
+
 //#define TFT_WR 22    // Write strobe for modified Raspberry Pi TFT only
 
 // For the M5Stack module use these #define lines

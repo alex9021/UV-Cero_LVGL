@@ -69,11 +69,8 @@ bool my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
     return false; /*Return `false` because we are not buffering and no more data to read*/
 }
 
-/*
-   SD CARD
-*/
-
-lv_fs_res_t sd_open_cb(struct _lv_fs_drv_t *drv, void *file_p, const char *path, lv_fs_mode_t mode)
+/* SD CARD */
+/*lv_fs_res_t sd_open_cb(struct _lv_fs_drv_t *drv, void *file_p, const char *path, lv_fs_mode_t mode)
 {
     lv_fs_res_t res = LV_FS_RES_NOT_IMP;
 
@@ -118,7 +115,7 @@ lv_fs_res_t sd_close_cb(struct _lv_fs_drv_t *drv, void *file_p)
     lv_fs_res_t res = LV_FS_RES_NOT_IMP;
 
     return res;
-}
+}*/
 
 void guiTaskLoop(void *parameter)
 {
@@ -153,7 +150,7 @@ void guiTaskLoop(void *parameter)
     lv_indev_drv_register(&indev_drv);
 
     /* create the drive */
-    if (SD_CARD_AVAILABLE)
+    /*if (SD_CARD_AVAILABLE)
     {
         lv_fs_drv_t sd_drv;
         lv_fs_drv_init(&sd_drv);
@@ -163,7 +160,7 @@ void guiTaskLoop(void *parameter)
         sd_drv.close_cb = sd_close_cb;
         sd_drv.read_cb = sd_read_cb;
         lv_fs_drv_register(&sd_drv);
-    }
+    }*/
 
     create_gui();
 
