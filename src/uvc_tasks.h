@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 #include <Wire.h>
+#include <FS.h>
+#include <SPIFFS.h>
 
 #include <lvgl.h>
 #include <TFT_eSPI.h>
@@ -10,6 +12,7 @@
 #include <uRTCLib.h>
 #include <uvcero.h>
 #include <uvc_gui.h>
+#include <uvc_filesystem.h>
 
 extern TaskHandle_t thGUI;
 extern TaskHandle_t thSensors;

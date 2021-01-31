@@ -302,10 +302,10 @@ static void sensor_updater(lv_task_t *t)
     lv_bar_set_value(fan_rpm_3, fans[2]->getCurrentRPM(), LV_ANIM_ON);
     lv_bar_set_value(fan_rpm_4, fans[3]->getCurrentRPM(), LV_ANIM_ON);
 
-    lv_bar_set_value(lamp_lm_1, lamps[0]->getCurrentLumen(), LV_ANIM_ON);
-    lv_bar_set_value(lamp_lm_2, lamps[1]->getCurrentLumen(), LV_ANIM_ON);
-    lv_bar_set_value(lamp_lm_3, lamps[2]->getCurrentLumen(), LV_ANIM_ON);
-    lv_bar_set_value(lamp_lm_4, lamps[3]->getCurrentLumen(), LV_ANIM_ON);
+    lv_bar_set_value(lamp_lm_1, lamps[0]->getCurrentLumen(), LV_ANIM_OFF);
+    lv_bar_set_value(lamp_lm_2, lamps[1]->getCurrentLumen(), LV_ANIM_OFF);
+    lv_bar_set_value(lamp_lm_3, lamps[2]->getCurrentLumen(), LV_ANIM_OFF);
+    lv_bar_set_value(lamp_lm_4, lamps[3]->getCurrentLumen(), LV_ANIM_OFF);
 }
 
 static void fan_speed_slider_event_cb(lv_obj_t *slider, lv_event_t event)
