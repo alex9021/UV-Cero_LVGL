@@ -37,6 +37,4 @@ void init()
     currentTimerItemCount++;
     timerItems[currentTimerItemCount] = new UVC_Timer_Item(currentTimerItemCount, TIMER_ITEM_WEEKDAY_FRIDAY, 16, 45, 165, TIMER_ITEM_REPEAT_NONE);
     currentTimerItemCount++;
-
-    Serial.println(currentTimerItemCount);
 }

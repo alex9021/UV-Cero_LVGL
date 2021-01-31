@@ -25,11 +25,11 @@ static lv_obj_t *lamp_lm_2;
 static lv_obj_t *lamp_lm_3;
 static lv_obj_t *lamp_lm_4;
 
+lv_obj_t *timerButtons[MAX_TIMER_COUNT];
+
 static lv_style_t style_box;
 
 lv_disp_size_t disp_size = LV_DISP_SIZE_SMALL;
-lv_obj_t *timerButtons[MAX_TIMER_COUNT];
-lv_obj_t *timerLabels[MAX_TIMER_COUNT];
 
 static void create_controls(lv_obj_t *parent);
 static void create_fans_status(lv_obj_t *parent);
@@ -38,6 +38,7 @@ static void create_timer_controls(lv_obj_t *parent);
 
 static void fan_speed_slider_event_cb(lv_obj_t *slider, lv_event_t event);
 static void lamp_switch_event_cb(lv_obj_t *sw, lv_event_t event);
+static void timer_btn_event_cb(lv_obj_t *btn, lv_event_t event);
 
 static void sensor_updater(lv_task_t *t);
 
@@ -231,24 +232,12 @@ static void create_timer_controls(lv_obj_t *parent)
 
     lv_page_set_scrl_layout(parent, LV_LAYOUT_GRID);
 
-    lv_coord_t grid_w = lv_page_get_width_grid(parent, 1, 1);
-
-    lv_obj_t *h = lv_cont_create(parent, NULL);
-    lv_cont_set_layout(h, LV_LAYOUT_PRETTY_TOP);
-    lv_obj_add_style(h, LV_CONT_PART_MAIN, &style_box);
-    lv_obj_set_drag_parent(h, true);
-
-    lv_cont_set_fit2(h, LV_FIT_NONE, LV_FIT_TIGHT);
-    lv_obj_set_width(h, grid_w);
+    lv_obj_t *timerList = lv_list_create(parent, NULL);
+    lv_cont_set_fit2(timerList, LV_FIT_PARENT, LV_FIT_TIGHT);
+    lv_obj_align(timerList, NULL, LV_ALIGN_CENTER, 0, 0);
 
     for (int i = 0; i < currentTimerItemCount; i++)
     {
-        Serial.println(i);
-        timerButtons[i] = lv_btn_create(h, NULL);
-        lv_obj_set_event_cb(timerButtons[i], NULL);
-        lv_obj_align(timerButtons[i], NULL, LV_ALIGN_CENTER, 0, 0);
-        lv_btn_set_fit2(timerButtons[i], LV_FIT_PARENT, LV_FIT_TIGHT);
-
         char labelText[50];
         sprintf(labelText, "%s %s for %dmin %s",
                 timerItems[i]->getWeekdayAsString().c_str(),
@@ -256,8 +245,8 @@ static void create_timer_controls(lv_obj_t *parent)
                 timerItems[i]->getDuration(),
                 timerItems[i]->getRepeatAsString().c_str());
 
-        timerLabels[i] = lv_label_create(timerButtons[i], NULL);
-        lv_label_set_text(timerLabels[i], labelText);
+        timerButtons[i] = lv_list_add_btn(timerList, NULL, labelText);
+        lv_obj_set_event_cb(timerButtons[i], timer_btn_event_cb);
     }
 }
 
@@ -361,6 +350,83 @@ static void lamp_switch_event_cb(lv_obj_t *sw, lv_event_t event)
 
     default:
         break;
+    }
+}
+
+static void timer_btn_event_cb(lv_obj_t *btn, lv_event_t event)
+{
+    if (event == LV_EVENT_RELEASED)
+    {
+        for (int i = 0; i < currentTimerItemCount; i++)
+        {
+            if (timerButtons[i] == btn)
+            {
+                Serial.println(timerItems[i]->getStartTimeAsString().c_str());
+            }
+        }
+
+        lv_obj_t *win = lv_win_create(lv_scr_act(), NULL);
+        lv_win_set_title(win, "EDIT TIMER");
+
+        lv_win_set_layout(win, LV_LAYOUT_GRID);
+
+        //lv_coord_t grid_w = lv_win_get_width(win);
+
+        lv_obj_t *close_btn = lv_win_add_btn(win, LV_SYMBOL_CLOSE); /*Add close button and use built-in close action*/
+        lv_obj_set_event_cb(close_btn, lv_win_close_event_cb);
+        
+        lv_obj_t *delete_btn = lv_win_add_btn(win, LV_SYMBOL_TRASH); /*Add close button and use built-in close action*/
+        lv_obj_set_event_cb(delete_btn, NULL);
+
+        lv_obj_t *repeatDropDown = lv_dropdown_create(win, NULL);
+        lv_dropdown_set_options(repeatDropDown, "none\n"
+                                                "hourly\n"
+                                                "daily\n"
+                                                "weekly\n");
+
+        lv_obj_align(repeatDropDown, NULL, LV_ALIGN_IN_TOP_MID, 0, 20);
+        //lv_obj_set_event_cb(weekdayDropDown, NULL);
+
+        lv_obj_t *weekdayDropDown = lv_dropdown_create(win, NULL);
+        lv_dropdown_set_options(weekdayDropDown, "Monday\n"
+                                                 "Tuesday\n"
+                                                 "Wednesday\n"
+                                                 "Thurday\n"
+                                                 "Friday\n"
+                                                 "Saturday\n"
+                                                 "Sunday\n");
+
+        lv_obj_align(weekdayDropDown, NULL, LV_ALIGN_IN_TOP_MID, 0, 20);
+
+        lv_obj_t *hoursRoller = lv_roller_create(win, NULL);
+        lv_roller_set_options(hoursRoller,
+                              "00\n01\n02\n03\n04\n05\n06\n07\n08\n09\n10\11\n"
+                              "12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23",
+                              LV_ROLLER_MODE_INFINITE);
+
+        lv_roller_set_visible_row_count(hoursRoller, 4);
+        lv_obj_align(hoursRoller, NULL, LV_ALIGN_CENTER, 0, 0);
+        lv_obj_set_event_cb(hoursRoller, NULL);
+
+        lv_obj_t *minutesRoller = lv_roller_create(win, NULL);
+        lv_roller_set_options(minutesRoller,
+                              "00\n"
+                              "15\n"
+                              "30\n"
+                              "45",
+                              LV_ROLLER_MODE_INFINITE);
+
+        lv_roller_set_visible_row_count(minutesRoller, 4);
+        lv_obj_align(minutesRoller, NULL, LV_ALIGN_CENTER, 0, 0);
+        lv_obj_set_event_cb(minutesRoller, NULL);
+
+        lv_obj_t *btnApply = lv_btn_create(win, NULL);
+        lv_obj_set_event_cb(btnApply, NULL);
+        lv_cont_set_fit2(btnApply, LV_FIT_PARENT, LV_FIT_TIGHT);
+        lv_obj_set_style_local_bg_color(btnApply, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
+
+        lv_obj_t *btnApplyLabel = lv_label_create(btnApply, NULL);
+        lv_label_set_text(btnApplyLabel, "APPLY");
     }
 }
 
