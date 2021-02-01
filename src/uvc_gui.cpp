@@ -331,10 +331,8 @@ static void fan_speed_slider_event_cb(lv_obj_t *slider, lv_event_t event)
 static void lamp_switch_event_cb(lv_obj_t *sw, lv_event_t event)
 {
 
-    switch (event)
+    if (event == LV_EVENT_VALUE_CHANGED)
     {
-    case LV_EVENT_VALUE_CHANGED:
-
         switch (lv_slider_get_value(sw))
         {
         case LAMPS_OFF:
@@ -345,11 +343,6 @@ static void lamp_switch_event_cb(lv_obj_t *sw, lv_event_t event)
             updateLampState(LAMPS_ON);
             break;
         }
-
-        break;
-
-    default:
-        break;
     }
 }
 
@@ -364,59 +357,102 @@ static void timer_btn_event_cb(lv_obj_t *btn, lv_event_t event)
                 Serial.println(timerItems[i]->getStartTimeAsString().c_str());
             }
         }
-
+        /* Window */
         lv_obj_t *win = lv_win_create(lv_scr_act(), NULL);
         lv_win_set_title(win, "EDIT TIMER");
-
-        lv_win_set_layout(win, LV_LAYOUT_GRID);
-
-        //lv_coord_t grid_w = lv_win_get_width(win);
+        lv_win_set_layout(win, LV_LAYOUT_PRETTY_TOP);
 
         lv_obj_t *close_btn = lv_win_add_btn(win, LV_SYMBOL_CLOSE); /*Add close button and use built-in close action*/
         lv_obj_set_event_cb(close_btn, lv_win_close_event_cb);
-        
+
         lv_obj_t *delete_btn = lv_win_add_btn(win, LV_SYMBOL_TRASH); /*Add close button and use built-in close action*/
         lv_obj_set_event_cb(delete_btn, NULL);
 
-        lv_obj_t *repeatDropDown = lv_dropdown_create(win, NULL);
-        lv_dropdown_set_options(repeatDropDown, "none\n"
-                                                "hourly\n"
-                                                "daily\n"
-                                                "weekly\n");
+        /* Content */
+        lv_obj_t *repetitionContainer = lv_cont_create(win, NULL);
+        lv_cont_set_layout(repetitionContainer, LV_LAYOUT_PRETTY_MID);
+        lv_cont_set_fit2(repetitionContainer, LV_FIT_NONE, LV_FIT_TIGHT);
+        lv_obj_set_width(repetitionContainer, 140);
 
-        lv_obj_align(repeatDropDown, NULL, LV_ALIGN_IN_TOP_MID, 0, 20);
-        //lv_obj_set_event_cb(weekdayDropDown, NULL);
+        lv_obj_t *repetitionLabel = lv_label_create(repetitionContainer, NULL);
+        lv_label_set_text(repetitionLabel, "Repetition");
+        lv_label_set_align(repetitionLabel, LV_LABEL_ALIGN_LEFT);
 
-        lv_obj_t *weekdayDropDown = lv_dropdown_create(win, NULL);
-        lv_dropdown_set_options(weekdayDropDown, "Monday\n"
-                                                 "Tuesday\n"
-                                                 "Wednesday\n"
-                                                 "Thurday\n"
-                                                 "Friday\n"
-                                                 "Saturday\n"
-                                                 "Sunday\n");
+        lv_obj_t *repeatDropDown = lv_dropdown_create(repetitionContainer, NULL);
+        lv_dropdown_set_options(repeatDropDown, "none\nhourly\ndaily\nweekly");
 
-        lv_obj_align(weekdayDropDown, NULL, LV_ALIGN_IN_TOP_MID, 0, 20);
+        lv_obj_t *weekdayContainer = lv_cont_create(win, NULL);
+        lv_cont_set_layout(weekdayContainer, LV_LAYOUT_PRETTY_MID);
+        lv_cont_set_fit2(weekdayContainer, LV_FIT_NONE, LV_FIT_TIGHT);
+        lv_obj_set_width(weekdayContainer, 140);
 
+        lv_obj_t *weekdayLabel = lv_label_create(weekdayContainer, NULL);
+        lv_label_set_text(weekdayLabel, "Weekday");
+        lv_label_set_align(weekdayLabel, LV_LABEL_ALIGN_LEFT);
+
+        lv_obj_t *weekdayDropDown = lv_dropdown_create(weekdayContainer, NULL);
+        lv_dropdown_set_options(weekdayDropDown, "Monday\nTuesday\nWednesday\nThurday\nFriday\nSaturday\nSunday");
+
+        lv_obj_t *startTimeContainer = lv_cont_create(win, NULL);
+        lv_cont_set_layout(startTimeContainer, LV_LAYOUT_PRETTY_MID);
+        lv_cont_set_fit2(startTimeContainer, LV_FIT_NONE, LV_FIT_TIGHT);
+        //lv_obj_set_width(startTimeContainer, 296);
+        lv_obj_set_width(startTimeContainer, 140);
+
+        lv_obj_t *startTimeLabel = lv_label_create(startTimeContainer, NULL);
+        lv_label_set_text(startTimeLabel, "   Start   ");
+        lv_label_set_align(startTimeLabel, LV_LABEL_ALIGN_LEFT);
+
+        lv_obj_t *startHoursRoller = lv_roller_create(startTimeContainer, NULL);
+        lv_roller_set_options(startHoursRoller, "00\n01\n02\n03\n04\n05\n06\n07\n08\n09\n10\11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23", LV_ROLLER_MODE_INFINITE);
+        lv_roller_set_visible_row_count(startHoursRoller, 2);
+        lv_obj_align(startHoursRoller, NULL, LV_ALIGN_CENTER, 0, 0);
+
+        lv_obj_t *startMinutesRoller = lv_roller_create(startTimeContainer, NULL);
+        lv_roller_set_options(startMinutesRoller,"00\n15\n30\n45", LV_ROLLER_MODE_INFINITE);
+        lv_roller_set_visible_row_count(startMinutesRoller, 2);
+        lv_obj_align(startMinutesRoller, NULL, LV_ALIGN_CENTER, 0, 0);
+
+        lv_obj_t *durationContainer = lv_cont_create(win, NULL);
+        lv_cont_set_layout(durationContainer, LV_LAYOUT_PRETTY_MID);
+        lv_cont_set_fit2(durationContainer, LV_FIT_NONE, LV_FIT_TIGHT);
+        lv_obj_set_width(durationContainer, 140);
+
+        lv_obj_t *durationLabel = lv_label_create(durationContainer, NULL);
+        lv_label_set_text(durationLabel, "Duration");
+        lv_label_set_align(durationLabel, LV_LABEL_ALIGN_LEFT);
+
+        lv_obj_t *durationHoursRoller = lv_roller_create(durationContainer, NULL);
+        lv_roller_set_options(durationHoursRoller, "00\n01\n02\n03\n04\n05\n06\n07\n08", LV_ROLLER_MODE_INFINITE);
+        lv_roller_set_visible_row_count(durationHoursRoller, 2);
+        lv_obj_align(durationHoursRoller, NULL, LV_ALIGN_CENTER, 0, 0);
+
+        lv_obj_t *durationMinutesRoller = lv_roller_create(durationContainer, NULL);
+        lv_roller_set_options(durationMinutesRoller,"00\n15\n30\n45", LV_ROLLER_MODE_INFINITE);
+        lv_roller_set_visible_row_count(durationMinutesRoller, 2);
+        lv_obj_align(durationMinutesRoller, NULL, LV_ALIGN_CENTER, 0, 0);
+
+        lv_obj_t *btnApply = lv_btn_create(win, NULL);
+        lv_obj_set_event_cb(btnApply, NULL);
+        lv_cont_set_fit2(btnApply, LV_FIT_PARENT, LV_FIT_TIGHT);
+
+        lv_obj_t *btnApplyLabel = lv_label_create(btnApply, NULL);
+        lv_label_set_text(btnApplyLabel, "APPLY");
+
+        /*
         lv_obj_t *hoursRoller = lv_roller_create(win, NULL);
         lv_roller_set_options(hoursRoller,
                               "00\n01\n02\n03\n04\n05\n06\n07\n08\n09\n10\11\n"
                               "12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23",
                               LV_ROLLER_MODE_INFINITE);
 
-        lv_roller_set_visible_row_count(hoursRoller, 4);
+        lv_roller_set_visible_row_count(hoursRoller, 2);
         lv_obj_align(hoursRoller, NULL, LV_ALIGN_CENTER, 0, 0);
         lv_obj_set_event_cb(hoursRoller, NULL);
 
-        lv_obj_t *minutesRoller = lv_roller_create(win, NULL);
-        lv_roller_set_options(minutesRoller,
-                              "00\n"
-                              "15\n"
-                              "30\n"
-                              "45",
-                              LV_ROLLER_MODE_INFINITE);
+        
 
-        lv_roller_set_visible_row_count(minutesRoller, 4);
+        lv_roller_set_visible_row_count(minutesRoller, 2);
         lv_obj_align(minutesRoller, NULL, LV_ALIGN_CENTER, 0, 0);
         lv_obj_set_event_cb(minutesRoller, NULL);
 
@@ -427,6 +463,7 @@ static void timer_btn_event_cb(lv_obj_t *btn, lv_event_t event)
 
         lv_obj_t *btnApplyLabel = lv_label_create(btnApply, NULL);
         lv_label_set_text(btnApplyLabel, "APPLY");
+*/
     }
 }
 
