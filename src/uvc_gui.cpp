@@ -438,9 +438,9 @@ static void timer_btn_event_cb(lv_obj_t *btn, lv_event_t event)
         lv_roller_set_visible_row_count(durationMinutesRoller, 2);
         lv_obj_align(durationMinutesRoller, NULL, LV_ALIGN_CENTER, 0, 0);
 
-        lv_obj_t *btnApply = lv_btn_create(win, NULL);
+        /*lv_obj_t *btnApply = lv_btn_create(win, NULL);
         lv_obj_set_event_cb(btnApply, NULL);
-        lv_cont_set_fit2(btnApply, LV_FIT_PARENT, LV_FIT_TIGHT);
+        lv_cont_set_fit2(btnApply, LV_FIT_PARENT, LV_FIT_TIGHT);*/
     }
 }
 
