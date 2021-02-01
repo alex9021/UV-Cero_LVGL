@@ -245,9 +245,12 @@ static void create_timer_controls(lv_obj_t *parent)
                 timerItems[i]->getDuration(),
                 timerItems[i]->getRepeatAsString().c_str());
 
-        timerButtons[i] = lv_list_add_btn(timerList, NULL, labelText);
+        timerButtons[i] = lv_list_add_btn(timerList, LV_SYMBOL_SETTINGS, labelText);
         lv_obj_set_event_cb(timerButtons[i], timer_btn_event_cb);
     }
+
+    lv_obj_t *addTimer = lv_list_add_btn(timerList, LV_SYMBOL_PLUS, "ADD TIMER");
+    lv_obj_set_event_cb(addTimer, NULL);
 }
 
 static void sensor_updater(lv_task_t *t)
@@ -368,6 +371,9 @@ static void timer_btn_event_cb(lv_obj_t *btn, lv_event_t event)
         lv_obj_t *delete_btn = lv_win_add_btn(win, LV_SYMBOL_TRASH); /*Add close button and use built-in close action*/
         lv_obj_set_event_cb(delete_btn, NULL);
 
+        lv_obj_t *save_btn = lv_win_add_btn(win, LV_SYMBOL_SAVE); /*Add close button and use built-in close action*/
+        lv_obj_set_event_cb(save_btn, NULL);
+
         /* Content */
         lv_obj_t *repetitionContainer = lv_cont_create(win, NULL);
         lv_cont_set_layout(repetitionContainer, LV_LAYOUT_PRETTY_MID);
@@ -409,7 +415,7 @@ static void timer_btn_event_cb(lv_obj_t *btn, lv_event_t event)
         lv_obj_align(startHoursRoller, NULL, LV_ALIGN_CENTER, 0, 0);
 
         lv_obj_t *startMinutesRoller = lv_roller_create(startTimeContainer, NULL);
-        lv_roller_set_options(startMinutesRoller,"00\n15\n30\n45", LV_ROLLER_MODE_INFINITE);
+        lv_roller_set_options(startMinutesRoller, "00\n15\n30\n45", LV_ROLLER_MODE_INFINITE);
         lv_roller_set_visible_row_count(startMinutesRoller, 2);
         lv_obj_align(startMinutesRoller, NULL, LV_ALIGN_CENTER, 0, 0);
 
@@ -428,42 +434,13 @@ static void timer_btn_event_cb(lv_obj_t *btn, lv_event_t event)
         lv_obj_align(durationHoursRoller, NULL, LV_ALIGN_CENTER, 0, 0);
 
         lv_obj_t *durationMinutesRoller = lv_roller_create(durationContainer, NULL);
-        lv_roller_set_options(durationMinutesRoller,"00\n15\n30\n45", LV_ROLLER_MODE_INFINITE);
+        lv_roller_set_options(durationMinutesRoller, "00\n15\n30\n45", LV_ROLLER_MODE_INFINITE);
         lv_roller_set_visible_row_count(durationMinutesRoller, 2);
         lv_obj_align(durationMinutesRoller, NULL, LV_ALIGN_CENTER, 0, 0);
 
         lv_obj_t *btnApply = lv_btn_create(win, NULL);
         lv_obj_set_event_cb(btnApply, NULL);
         lv_cont_set_fit2(btnApply, LV_FIT_PARENT, LV_FIT_TIGHT);
-
-        lv_obj_t *btnApplyLabel = lv_label_create(btnApply, NULL);
-        lv_label_set_text(btnApplyLabel, "APPLY");
-
-        /*
-        lv_obj_t *hoursRoller = lv_roller_create(win, NULL);
-        lv_roller_set_options(hoursRoller,
-                              "00\n01\n02\n03\n04\n05\n06\n07\n08\n09\n10\11\n"
-                              "12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23",
-                              LV_ROLLER_MODE_INFINITE);
-
-        lv_roller_set_visible_row_count(hoursRoller, 2);
-        lv_obj_align(hoursRoller, NULL, LV_ALIGN_CENTER, 0, 0);
-        lv_obj_set_event_cb(hoursRoller, NULL);
-
-        
-
-        lv_roller_set_visible_row_count(minutesRoller, 2);
-        lv_obj_align(minutesRoller, NULL, LV_ALIGN_CENTER, 0, 0);
-        lv_obj_set_event_cb(minutesRoller, NULL);
-
-        lv_obj_t *btnApply = lv_btn_create(win, NULL);
-        lv_obj_set_event_cb(btnApply, NULL);
-        lv_cont_set_fit2(btnApply, LV_FIT_PARENT, LV_FIT_TIGHT);
-        lv_obj_set_style_local_bg_color(btnApply, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
-
-        lv_obj_t *btnApplyLabel = lv_label_create(btnApply, NULL);
-        lv_label_set_text(btnApplyLabel, "APPLY");
-*/
     }
 }
 
