@@ -9,6 +9,7 @@ void setup()
     digitalWrite(SD_CS, HIGH);
 
     Serial.begin(115200);
+    Serial.println("");
     
     xFAN_SPEED = xQueueCreate(1, sizeof(uint8_t));
 

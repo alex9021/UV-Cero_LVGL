@@ -13,6 +13,7 @@ bool SD_CARD_AVAILABLE = false;
 
 void init()
 {
+    Wire.begin(I2C_SDA_PIN,I2C_SCL_PIN);
     /**
       @ToDo: read data from sd card
     **/

@@ -110,12 +110,17 @@ void sensorsTaskLoop(void *parameter)
     {
         //gpio_expander.read8();
 
+        fans[0]->setCurrentRPM(random(2450 * currentFanSpeed, 2500 * currentFanSpeed));
+        fans[1]->setCurrentRPM(random(2450 * currentFanSpeed, 2500 * currentFanSpeed));
+        fans[2]->setCurrentRPM(random(2450 * currentFanSpeed, 2500 * currentFanSpeed));
+        fans[3]->setCurrentRPM(random(2450 * currentFanSpeed, 2500 * currentFanSpeed));
+
         lamps[0]->setCurrentLumen(random(0, 1));
         lamps[1]->setCurrentLumen(random(0, 1));
         lamps[2]->setCurrentLumen(random(0, 1));
         lamps[3]->setCurrentLumen(random(0, 1));
 
-        delay(5);
+        delay(200);
     }
 }
 
@@ -175,7 +180,30 @@ void lampControllerTaskLoop(void *parameter)
 
 void rtcUpdaterTaskLoop(void *parameter)
 {
-    rtc.set(0, 42, 16, 6, 2, 5, 15);
+    rtc.set_rtc_address(I2C_ADDR_RTC);
+    rtc.set_model(URTCLIB_MODEL_DS3231);
+
+    if (rtc.enableBattery())
+    {
+        Serial.println("Battery activated correctly.");
+    }
+    else
+    {
+        Serial.println("ERROR activating battery.");
+    }
+
+    Serial.print("Lost power status: ");
+    if (rtc.lostPower())
+    {
+        Serial.print("POWER FAILED. Clearing flag...");
+        rtc.set(42, 37, 13, URTCLIB_WEEKDAY_TUESDAY, 21, 1, 81);
+        rtc.lostPowerClear();
+        Serial.println(" done.");
+    }
+    else
+    {
+        Serial.println("POWER OK");
+    }
 
     for (;;)
     {

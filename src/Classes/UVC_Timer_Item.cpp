@@ -28,7 +28,7 @@ String UVC_Timer_Item::getWeekdayAsString()
         case 0:
             if (_repeat == 3)
             {
-                weekDay = "every Monday @";
+                weekDay = "Mondays @";
             }
             else
             {
@@ -38,7 +38,7 @@ String UVC_Timer_Item::getWeekdayAsString()
         case 1:
             if (_repeat == 3)
             {
-                weekDay = "every Tuesday @";
+                weekDay = "Tuesdays @";
             }
             else
             {
@@ -48,7 +48,7 @@ String UVC_Timer_Item::getWeekdayAsString()
         case 2:
             if (_repeat == 3)
             {
-                weekDay = "every Wednesday @";
+                weekDay = "Wednesdays @";
             }
             else
             {
@@ -58,7 +58,7 @@ String UVC_Timer_Item::getWeekdayAsString()
         case 3:
             if (_repeat == 3)
             {
-                weekDay = "every Thursday @";
+                weekDay = "Thursdays @";
             }
             else
             {
@@ -68,7 +68,7 @@ String UVC_Timer_Item::getWeekdayAsString()
         case 4:
             if (_repeat == 3)
             {
-                weekDay = "every Friday @";
+                weekDay = "Fridays @";
             }
             else
             {
@@ -78,7 +78,7 @@ String UVC_Timer_Item::getWeekdayAsString()
         case 5:
             if (_repeat == 3)
             {
-                weekDay = "every Saturday @";
+                weekDay = "Saturdays @";
             }
             else
             {
@@ -88,7 +88,7 @@ String UVC_Timer_Item::getWeekdayAsString()
         case 6:
             if (_repeat == 3)
             {
-                weekDay = "every Sunday @";
+                weekDay = "Sundays @";
             }
             else
             {
@@ -111,9 +111,29 @@ String UVC_Timer_Item::getStartTimeAsString()
     return String(startTimeText);
 }
 
+int UVC_Timer_Item::getWeekday()
+{
+    return _weekDay;
+}
+
 int UVC_Timer_Item::getDuration()
 {
     return _duration;
+}
+
+int UVC_Timer_Item::getRepeat()
+{
+    return _repeat;
+}
+
+int UVC_Timer_Item::getHour()
+{
+    return _hour;
+}
+
+int UVC_Timer_Item::getMinute()
+{
+    return _minute;
 }
 
 String UVC_Timer_Item::getRepeatAsString()

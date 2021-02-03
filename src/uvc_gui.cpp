@@ -1,7 +1,6 @@
 #include <uvc_gui.h>
 #include <stdio.h>
 #include <uvc_assets\logo_dark.h>
-#include <uvc_assets\logo_light.h>
 
 static lv_obj_t *tv;
 static lv_obj_t *t1;
@@ -12,8 +11,10 @@ static lv_obj_t *t4;
 static lv_obj_t *fan_speed_slider;
 static lv_obj_t *fan_speed_slider_label;
 
-static lv_obj_t *lamp_switch_label;
-static lv_obj_t *lamp_switch;
+/*
+static lv_obj_t *enable_switch_label;
+static lv_obj_t *enable_switch;
+*/
 
 static lv_obj_t *fan_rpm_1;
 static lv_obj_t *fan_rpm_2;
@@ -25,90 +26,97 @@ static lv_obj_t *lamp_lm_2;
 static lv_obj_t *lamp_lm_3;
 static lv_obj_t *lamp_lm_4;
 
+lv_obj_t *timerList;
 lv_obj_t *timerButtons[MAX_TIMER_COUNT];
+lv_obj_t *timeLabel;
 
 static lv_style_t style_box;
 
 lv_disp_size_t disp_size = LV_DISP_SIZE_SMALL;
 
 static void create_controls(lv_obj_t *parent);
-static void create_fans_status(lv_obj_t *parent);
-static void create_lamps_status(lv_obj_t *parent);
+static void create_components_status(lv_obj_t *parent);
+static void create_info(lv_obj_t *parent);
 static void create_timer_controls(lv_obj_t *parent);
 
 static void fan_speed_slider_event_cb(lv_obj_t *slider, lv_event_t event);
-static void lamp_switch_event_cb(lv_obj_t *sw, lv_event_t event);
+//static void enable_switch_event_cb(lv_obj_t *sw, lv_event_t event);
 static void timer_btn_event_cb(lv_obj_t *btn, lv_event_t event);
+static void timer_item_add_event_cb(lv_obj_t *add_btn, lv_event_t event);
 
 static void sensor_updater(lv_task_t *t);
 
+void createTimerItemDetailsWindow(bool update, int timerItemIndex);
+void removeTimerItemByIndex(int timerItemindex, lv_obj_t *win);
+
 LV_IMG_DECLARE(logo_dark);
-LV_IMG_DECLARE(logo_light);
 
 void create_gui(void)
 {
     tv = lv_tabview_create(lv_scr_act(), NULL);
-    t1 = lv_tabview_add_tab(tv, "CONTROLS");
-    t2 = lv_tabview_add_tab(tv, "FANS");
-    t3 = lv_tabview_add_tab(tv, "LAMPS");
-    t4 = lv_tabview_add_tab(tv, "TIMER");
+    t1 = lv_tabview_add_tab(tv, "CONTROL");
+    t2 = lv_tabview_add_tab(tv, "STATUS");
+    t3 = lv_tabview_add_tab(tv, "TIMER");
+    t4 = lv_tabview_add_tab(tv, "INFO");
+
+    lv_tabview_set_btns_pos(tv, LV_TABVIEW_TAB_POS_BOTTOM);
 
     lv_style_init(&style_box);
     lv_style_set_value_align(&style_box, LV_STATE_DEFAULT, LV_ALIGN_OUT_TOP_LEFT);
     lv_style_set_value_ofs_y(&style_box, LV_STATE_DEFAULT, -LV_DPX(10));
-    lv_style_set_margin_top(&style_box, LV_STATE_DEFAULT, LV_DPX(30));
+    lv_style_set_margin_top(&style_box, LV_STATE_DEFAULT, LV_DPX(10));    
 
     create_controls(t1);
-    create_fans_status(t2);
-    create_lamps_status(t3);
-    create_timer_controls(t4);
+    create_components_status(t2);
+    create_timer_controls(t3);
+    create_info(t4);
 
     /* show splash screen */
     lv_obj_t *splashscreen = lv_img_create(lv_scr_act(), NULL);
     lv_img_set_src(splashscreen, &logo_dark);
 
-    lv_obj_t *splashscreen_light = lv_img_create(lv_scr_act(), NULL);
-    lv_img_set_src(splashscreen_light, &logo_light);
+    lv_obj_fade_out(splashscreen, 0, 2000);
 
-    lv_obj_fade_out(splashscreen, 0, 4000);
-    lv_obj_fade_out(splashscreen_light, 0, 2000);
-
-    lv_task_create(sensor_updater, 200, LV_TASK_PRIO_LOWEST, NULL);
+    lv_task_create(sensor_updater, 1000, LV_TASK_PRIO_LOWEST, NULL);
 }
 
 static void create_controls(lv_obj_t *parent)
 {
-    lv_page_set_scrl_layout(parent, LV_LAYOUT_GRID);
+    lv_page_set_scrl_layout(parent, LV_LAYOUT_PRETTY_TOP);
 
-    lv_disp_size_t disp_size = lv_disp_get_size_category(NULL);
-    lv_coord_t grid_w = lv_page_get_width_grid(parent, disp_size <= LV_DISP_SIZE_SMALL ? 1 : 2, 1);
+    lv_coord_t grid_w = lv_page_get_width_grid(parent, 1, 1);
+
+    lv_obj_t *deviceLabel = lv_label_create(parent, NULL);
+    lv_label_set_text(deviceLabel, "ReTecCom UV-Cero");
+    lv_obj_set_width(deviceLabel, 150);
+    lv_obj_set_height(deviceLabel, 5);
+
+    timeLabel = lv_label_create(parent, NULL);
+    lv_obj_set_width(timeLabel, 150);
+    lv_obj_set_height(timeLabel, 5);
 
     lv_obj_t *h = lv_cont_create(parent, NULL);
+    lv_cont_set_fit2(h, LV_FIT_PARENT, LV_FIT_TIGHT);
     lv_cont_set_layout(h, LV_LAYOUT_PRETTY_TOP);
-    lv_obj_add_style(h, LV_CONT_PART_MAIN, &style_box);
-    lv_obj_set_drag_parent(h, true);
 
-    lv_cont_set_fit2(h, LV_FIT_NONE, LV_FIT_TIGHT);
-    lv_obj_set_width(h, grid_w);
+    /*
+    enable_switch_label = lv_label_create(h, NULL);
+    lv_label_set_text(enable_switch_label, "ENABLE");
 
-    lamp_switch_label = lv_label_create(h, NULL);
-    lv_label_set_text(lamp_switch_label, "LAMP SWITCH");
-
-    lamp_switch = lv_switch_create(h, NULL);
-    lv_obj_set_event_cb(lamp_switch, lamp_switch_event_cb);
-
-    lv_coord_t fit_w = lv_obj_get_width_fit(h);
+    enable_switch = lv_switch_create(h, NULL);
+    lv_obj_set_event_cb(enable_switch, enable_switch_event_cb);
+    */
 
     lv_obj_t *fan_speed_label = lv_label_create(h, NULL);
-    lv_label_set_text(fan_speed_label, "FAN SPEED CONTROL");
+    lv_label_set_text(fan_speed_label, "AIR PURIFICATION");
     lv_obj_set_style_local_margin_top(fan_speed_label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_DPX(10));
 
     fan_speed_slider = lv_slider_create(h, NULL);
     lv_slider_set_value(fan_speed_slider, FAN_SPEED_HIGH, LV_ANIM_ON);
     lv_slider_set_range(fan_speed_slider, FAN_SPEED_OFF, FAN_SPEED_HIGH);
-    lv_obj_set_height(fan_speed_slider, LV_DPX(18));
+    //lv_obj_set_height(fan_speed_slider, 12);
     lv_obj_set_event_cb(fan_speed_slider, fan_speed_slider_event_cb);
-    lv_obj_set_width_margin(fan_speed_slider, fit_w);
+    lv_obj_set_width_fit(h, lv_obj_get_width_fit(h));
 
     fan_speed_slider_label = lv_label_create(h, NULL);
     lv_label_set_text(fan_speed_slider_label, "HIGH");
@@ -123,7 +131,7 @@ static void create_controls(lv_obj_t *parent)
     lv_obj_set_style_local_transition_prop_6(fan_speed_slider, LV_SLIDER_PART_KNOB, LV_STATE_DEFAULT, LV_STYLE_VALUE_OPA);
 }
 
-static void create_fans_status(lv_obj_t *parent)
+static void create_components_status(lv_obj_t *parent)
 {
     lv_page_set_scrl_layout(parent, LV_LAYOUT_GRID);
 
@@ -139,43 +147,79 @@ static void create_fans_status(lv_obj_t *parent)
     lv_obj_set_width(h, grid_w);
 
     lv_obj_t *fan_rpm_1_label = lv_label_create(h, NULL);
-    lv_label_set_text(fan_rpm_1_label, "FAN 1 RPM");
+    lv_label_set_text(fan_rpm_1_label, CUSTOM_SYMBOL_SOLID_FAN " FAN 1");
 
     fan_rpm_1 = lv_bar_create(h, NULL);
     lv_obj_set_size(fan_rpm_1, 170, 20);
     lv_bar_set_range(fan_rpm_1, 0, 10000);
-    lv_bar_set_anim_time(fan_rpm_1, 200);
+    lv_bar_set_anim_time(fan_rpm_1, 500);
     lv_bar_set_value(fan_rpm_1, fans[0]->getCurrentRPM(), LV_ANIM_ON);
 
     lv_obj_t *fan_rpm_2_label = lv_label_create(h, NULL);
-    lv_label_set_text(fan_rpm_2_label, "FAN 2 RPM");
+    lv_label_set_text(fan_rpm_2_label, CUSTOM_SYMBOL_SOLID_FAN " FAN 2");
 
     fan_rpm_2 = lv_bar_create(h, NULL);
     lv_obj_set_size(fan_rpm_2, 170, 20);
     lv_bar_set_range(fan_rpm_2, 0, 10000);
-    lv_bar_set_anim_time(fan_rpm_2, 200);
+    lv_bar_set_anim_time(fan_rpm_2, 500);
     lv_bar_set_value(fan_rpm_2, fans[1]->getCurrentRPM(), LV_ANIM_ON);
 
     lv_obj_t *fan_rpm_3_label = lv_label_create(h, NULL);
-    lv_label_set_text(fan_rpm_3_label, "FAN 3 RPM");
+    lv_label_set_text(fan_rpm_3_label, CUSTOM_SYMBOL_SOLID_FAN " FAN 3");
 
     fan_rpm_3 = lv_bar_create(h, NULL);
     lv_obj_set_size(fan_rpm_3, 170, 20);
     lv_bar_set_range(fan_rpm_3, 0, 10000);
-    lv_bar_set_anim_time(fan_rpm_3, 200);
+    lv_bar_set_anim_time(fan_rpm_3, 500);
     lv_bar_set_value(fan_rpm_3, fans[2]->getCurrentRPM(), LV_ANIM_ON);
 
     lv_obj_t *fan_rpm_4_label = lv_label_create(h, NULL);
-    lv_label_set_text(fan_rpm_4_label, "FAN 4 RPM");
+    lv_label_set_text(fan_rpm_4_label, CUSTOM_SYMBOL_SOLID_FAN " FAN 4");
 
     fan_rpm_4 = lv_bar_create(h, NULL);
     lv_obj_set_size(fan_rpm_4, 170, 20);
     lv_bar_set_range(fan_rpm_4, 0, 10000);
-    lv_bar_set_anim_time(fan_rpm_4, 200);
+    lv_bar_set_anim_time(fan_rpm_4, 500);
     lv_bar_set_value(fan_rpm_4, fans[3]->getCurrentRPM(), LV_ANIM_ON);
+
+    lv_obj_t *lamp_lm_1_label = lv_label_create(h, NULL);
+    lv_label_set_text(lamp_lm_1_label, CUSTOM_SYMBOL_SOLID_LIGHTBULB " LAMP 1");
+
+    lamp_lm_1 = lv_bar_create(h, NULL);
+    lv_obj_set_size(lamp_lm_1, 150, 20);
+    lv_bar_set_range(lamp_lm_1, 0, 1);
+    lv_bar_set_anim_time(lamp_lm_1, 200);
+    lv_bar_set_value(lamp_lm_1, lamps[0]->getCurrentLumen(), LV_ANIM_ON);
+
+    lv_obj_t *lamp_lm_2_label = lv_label_create(h, NULL);
+    lv_label_set_text(lamp_lm_2_label, CUSTOM_SYMBOL_SOLID_LIGHTBULB " LAMP 2");
+
+    lamp_lm_2 = lv_bar_create(h, NULL);
+    lv_obj_set_size(lamp_lm_2, 150, 20);
+    lv_bar_set_range(lamp_lm_2, 0, 1);
+    lv_bar_set_anim_time(lamp_lm_2, 200);
+    lv_bar_set_value(lamp_lm_2, lamps[1]->getCurrentLumen(), LV_ANIM_ON);
+
+    lv_obj_t *lamp_lm_3_label = lv_label_create(h, NULL);
+    lv_label_set_text(lamp_lm_3_label, CUSTOM_SYMBOL_SOLID_LIGHTBULB " LAMP 3");
+
+    lamp_lm_3 = lv_bar_create(h, NULL);
+    lv_obj_set_size(lamp_lm_3, 150, 20);
+    lv_bar_set_range(lamp_lm_3, 0, 1);
+    lv_bar_set_anim_time(lamp_lm_3, 200);
+    lv_bar_set_value(lamp_lm_3, lamps[2]->getCurrentLumen(), LV_ANIM_ON);
+
+    lv_obj_t *lamp_lm_4_label = lv_label_create(h, NULL);
+    lv_label_set_text(lamp_lm_4_label, CUSTOM_SYMBOL_SOLID_LIGHTBULB " LAMP 4");
+
+    lamp_lm_4 = lv_bar_create(h, NULL);
+    lv_obj_set_size(lamp_lm_4, 150, 20);
+    lv_bar_set_range(lamp_lm_4, 0, 1);
+    lv_bar_set_anim_time(lamp_lm_4, 200);
+    lv_bar_set_value(lamp_lm_4, lamps[3]->getCurrentLumen(), LV_ANIM_ON);
 }
 
-static void create_lamps_status(lv_obj_t *parent)
+static void create_info(lv_obj_t *parent)
 {
     lv_page_set_scrl_layout(parent, LV_LAYOUT_GRID);
 
@@ -189,68 +233,34 @@ static void create_lamps_status(lv_obj_t *parent)
 
     lv_cont_set_fit2(h, LV_FIT_NONE, LV_FIT_TIGHT);
     lv_obj_set_width(h, grid_w);
-
-    lv_obj_t *lamp_lm_1_label = lv_label_create(h, NULL);
-    lv_label_set_text(lamp_lm_1_label, "LAMP 1 LM");
-
-    lamp_lm_1 = lv_bar_create(h, NULL);
-    lv_obj_set_size(lamp_lm_1, 170, 20);
-    lv_bar_set_range(lamp_lm_1, 0, 1);
-    lv_bar_set_anim_time(lamp_lm_1, 200);
-    lv_bar_set_value(lamp_lm_1, lamps[0]->getCurrentLumen(), LV_ANIM_ON);
-
-    lv_obj_t *lamp_lm_2_label = lv_label_create(h, NULL);
-    lv_label_set_text(lamp_lm_2_label, "LAMP 2 LM");
-
-    lamp_lm_2 = lv_bar_create(h, NULL);
-    lv_obj_set_size(lamp_lm_2, 170, 20);
-    lv_bar_set_range(lamp_lm_2, 0, 1);
-    lv_bar_set_anim_time(lamp_lm_2, 200);
-    lv_bar_set_value(lamp_lm_2, lamps[1]->getCurrentLumen(), LV_ANIM_ON);
-
-    lv_obj_t *lamp_lm_3_label = lv_label_create(h, NULL);
-    lv_label_set_text(lamp_lm_3_label, "LAMP 3 LM");
-
-    lamp_lm_3 = lv_bar_create(h, NULL);
-    lv_obj_set_size(lamp_lm_3, 170, 20);
-    lv_bar_set_range(lamp_lm_3, 0, 1);
-    lv_bar_set_anim_time(lamp_lm_3, 200);
-    lv_bar_set_value(lamp_lm_3, lamps[2]->getCurrentLumen(), LV_ANIM_ON);
-
-    lv_obj_t *lamp_lm_4_label = lv_label_create(h, NULL);
-    lv_label_set_text(lamp_lm_4_label, "LAMP 4 LM");
-
-    lamp_lm_4 = lv_bar_create(h, NULL);
-    lv_obj_set_size(lamp_lm_4, 170, 20);
-    lv_bar_set_range(lamp_lm_4, 0, 1);
-    lv_bar_set_anim_time(lamp_lm_4, 200);
-    lv_bar_set_value(lamp_lm_4, lamps[3]->getCurrentLumen(), LV_ANIM_ON);
 }
 
 static void create_timer_controls(lv_obj_t *parent)
 {
-
     lv_page_set_scrl_layout(parent, LV_LAYOUT_GRID);
 
-    lv_obj_t *timerList = lv_list_create(parent, NULL);
+    timerList = lv_list_create(parent, NULL);
     lv_cont_set_fit2(timerList, LV_FIT_PARENT, LV_FIT_TIGHT);
     lv_obj_align(timerList, NULL, LV_ALIGN_CENTER, 0, 0);
 
-    for (int i = 0; i < currentTimerItemCount; i++)
-    {
-        char labelText[50];
-        sprintf(labelText, "%s %s for %dmin %s",
-                timerItems[i]->getWeekdayAsString().c_str(),
-                timerItems[i]->getStartTimeAsString().c_str(),
-                timerItems[i]->getDuration(),
-                timerItems[i]->getRepeatAsString().c_str());
-
-        timerButtons[i] = lv_list_add_btn(timerList, LV_SYMBOL_SETTINGS, labelText);
-        lv_obj_set_event_cb(timerButtons[i], timer_btn_event_cb);
-    }
-
     lv_obj_t *addTimer = lv_list_add_btn(timerList, LV_SYMBOL_PLUS, "ADD TIMER");
-    lv_obj_set_event_cb(addTimer, NULL);
+    lv_obj_set_event_cb(addTimer, timer_item_add_event_cb);
+
+    if (currentTimerItemCount > 0)
+    {
+        for (int i = 0; i < currentTimerItemCount; i++)
+        {
+            char labelText[50];
+            sprintf(labelText, "%s %s for %dmin %s",
+                    timerItems[i]->getWeekdayAsString().c_str(),
+                    timerItems[i]->getStartTimeAsString().c_str(),
+                    timerItems[i]->getDuration(),
+                    timerItems[i]->getRepeatAsString().c_str());
+
+            timerButtons[i] = lv_list_add_btn(timerList, LV_SYMBOL_SETTINGS, labelText);
+            lv_obj_set_event_cb(timerButtons[i], timer_btn_event_cb);
+        }
+    }
 }
 
 static void sensor_updater(lv_task_t *t)
@@ -278,16 +288,16 @@ static void sensor_updater(lv_task_t *t)
         break;
     }
 
-    switch (currentLampState)
+    /*switch (currentLampState)
     {
     case LAMPS_OFF:
-        lv_switch_off(lamp_switch, LV_ANIM_ON);
+        lv_switch_off(enable_switch, LV_ANIM_ON);
         break;
 
     case LAMPS_ON:
-        lv_switch_on(lamp_switch, LV_ANIM_ON);
+        lv_switch_on(enable_switch, LV_ANIM_ON);
         break;
-    }
+    }*/
 
     lv_bar_set_value(fan_rpm_1, fans[0]->getCurrentRPM(), LV_ANIM_ON);
     lv_bar_set_value(fan_rpm_2, fans[1]->getCurrentRPM(), LV_ANIM_ON);
@@ -298,6 +308,10 @@ static void sensor_updater(lv_task_t *t)
     lv_bar_set_value(lamp_lm_2, lamps[1]->getCurrentLumen(), LV_ANIM_OFF);
     lv_bar_set_value(lamp_lm_3, lamps[2]->getCurrentLumen(), LV_ANIM_OFF);
     lv_bar_set_value(lamp_lm_4, lamps[3]->getCurrentLumen(), LV_ANIM_OFF);
+
+    char now[25] = "";
+    sprintf(now, "%d/%02d/%02d %02d:%02d", rtc.day(), rtc.month(), rtc.day(), rtc.hour(), rtc.minute());
+    lv_label_set_text(timeLabel, now);
 }
 
 static void fan_speed_slider_event_cb(lv_obj_t *slider, lv_event_t event)
@@ -309,18 +323,22 @@ static void fan_speed_slider_event_cb(lv_obj_t *slider, lv_event_t event)
         switch (lv_slider_get_value(slider))
         {
         case FAN_SPEED_OFF:
+            updateLampState(LAMPS_OFF);
             updateFanSpeed(FAN_SPEED_OFF);
             break;
 
         case FAN_SPEED_LOW:
+            updateLampState(LAMPS_ON);
             updateFanSpeed(FAN_SPEED_LOW);
             break;
 
         case FAN_SPEED_MEDIUM:
+            updateLampState(LAMPS_ON);
             updateFanSpeed(FAN_SPEED_MEDIUM);
             break;
 
         case FAN_SPEED_HIGH:
+            updateLampState(LAMPS_ON);
             updateFanSpeed(FAN_SPEED_HIGH);
             break;
         }
@@ -331,21 +349,45 @@ static void fan_speed_slider_event_cb(lv_obj_t *slider, lv_event_t event)
     }
 }
 
-static void lamp_switch_event_cb(lv_obj_t *sw, lv_event_t event)
+/*
+static void enable_switch_event_cb(lv_obj_t *sw, lv_event_t event)
 {
-
     if (event == LV_EVENT_VALUE_CHANGED)
     {
         switch (lv_slider_get_value(sw))
         {
         case LAMPS_OFF:
             updateLampState(LAMPS_OFF);
+            updateFanSpeed(FAN_SPEED_OFF);
             break;
 
         case LAMPS_ON:
             updateLampState(LAMPS_ON);
+            updateFanSpeed(FAN_SPEED_LOW);
             break;
         }
+    }
+}
+*/
+
+static void timer_item_delete_event_cb(lv_obj_t *delete_btn, lv_event_t event)
+{
+    if (event == LV_EVENT_RELEASED)
+    {
+        lv_obj_t *win = lv_win_get_from_btn(delete_btn);
+        String winTitle = String(lv_win_get_title(win));
+        winTitle.replace("EDIT TIMER ", "");
+        int timerItemIdx = winTitle.toInt();
+
+        removeTimerItemByIndex(timerItemIdx, win);
+    }
+}
+
+static void timer_item_add_event_cb(lv_obj_t *add_btn, lv_event_t event)
+{
+    if (event == LV_EVENT_RELEASED)
+    {
+        createTimerItemDetailsWindow(false, currentTimerItemCount);
     }
 }
 
@@ -353,95 +395,128 @@ static void timer_btn_event_cb(lv_obj_t *btn, lv_event_t event)
 {
     if (event == LV_EVENT_RELEASED)
     {
-        for (int i = 0; i < currentTimerItemCount; i++)
-        {
-            if (timerButtons[i] == btn)
-            {
-                Serial.println(timerItems[i]->getStartTimeAsString().c_str());
-            }
-        }
-        /* Window */
-        lv_obj_t *win = lv_win_create(lv_scr_act(), NULL);
-        lv_win_set_title(win, "EDIT TIMER");
-        lv_win_set_layout(win, LV_LAYOUT_PRETTY_TOP);
-
-        lv_obj_t *close_btn = lv_win_add_btn(win, LV_SYMBOL_CLOSE); /*Add close button and use built-in close action*/
-        lv_obj_set_event_cb(close_btn, lv_win_close_event_cb);
-
-        lv_obj_t *delete_btn = lv_win_add_btn(win, LV_SYMBOL_TRASH); /*Add close button and use built-in close action*/
-        lv_obj_set_event_cb(delete_btn, NULL);
-
-        lv_obj_t *save_btn = lv_win_add_btn(win, LV_SYMBOL_SAVE); /*Add close button and use built-in close action*/
-        lv_obj_set_event_cb(save_btn, NULL);
-
-        /* Content */
-        lv_obj_t *repetitionContainer = lv_cont_create(win, NULL);
-        lv_cont_set_layout(repetitionContainer, LV_LAYOUT_PRETTY_MID);
-        lv_cont_set_fit2(repetitionContainer, LV_FIT_NONE, LV_FIT_TIGHT);
-        lv_obj_set_width(repetitionContainer, 140);
-
-        lv_obj_t *repetitionLabel = lv_label_create(repetitionContainer, NULL);
-        lv_label_set_text(repetitionLabel, "Repetition");
-        lv_label_set_align(repetitionLabel, LV_LABEL_ALIGN_LEFT);
-
-        lv_obj_t *repeatDropDown = lv_dropdown_create(repetitionContainer, NULL);
-        lv_dropdown_set_options(repeatDropDown, "none\nhourly\ndaily\nweekly");
-
-        lv_obj_t *weekdayContainer = lv_cont_create(win, NULL);
-        lv_cont_set_layout(weekdayContainer, LV_LAYOUT_PRETTY_MID);
-        lv_cont_set_fit2(weekdayContainer, LV_FIT_NONE, LV_FIT_TIGHT);
-        lv_obj_set_width(weekdayContainer, 140);
-
-        lv_obj_t *weekdayLabel = lv_label_create(weekdayContainer, NULL);
-        lv_label_set_text(weekdayLabel, "Weekday");
-        lv_label_set_align(weekdayLabel, LV_LABEL_ALIGN_LEFT);
-
-        lv_obj_t *weekdayDropDown = lv_dropdown_create(weekdayContainer, NULL);
-        lv_dropdown_set_options(weekdayDropDown, "Monday\nTuesday\nWednesday\nThurday\nFriday\nSaturday\nSunday");
-
-        lv_obj_t *startTimeContainer = lv_cont_create(win, NULL);
-        lv_cont_set_layout(startTimeContainer, LV_LAYOUT_PRETTY_MID);
-        lv_cont_set_fit2(startTimeContainer, LV_FIT_NONE, LV_FIT_TIGHT);
-        //lv_obj_set_width(startTimeContainer, 296);
-        lv_obj_set_width(startTimeContainer, 140);
-
-        lv_obj_t *startTimeLabel = lv_label_create(startTimeContainer, NULL);
-        lv_label_set_text(startTimeLabel, "   Start   ");
-        lv_label_set_align(startTimeLabel, LV_LABEL_ALIGN_LEFT);
-
-        lv_obj_t *startHoursRoller = lv_roller_create(startTimeContainer, NULL);
-        lv_roller_set_options(startHoursRoller, "00\n01\n02\n03\n04\n05\n06\n07\n08\n09\n10\11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23", LV_ROLLER_MODE_INFINITE);
-        lv_roller_set_visible_row_count(startHoursRoller, 2);
-        lv_obj_align(startHoursRoller, NULL, LV_ALIGN_CENTER, 0, 0);
-
-        lv_obj_t *startMinutesRoller = lv_roller_create(startTimeContainer, NULL);
-        lv_roller_set_options(startMinutesRoller, "00\n15\n30\n45", LV_ROLLER_MODE_INFINITE);
-        lv_roller_set_visible_row_count(startMinutesRoller, 2);
-        lv_obj_align(startMinutesRoller, NULL, LV_ALIGN_CENTER, 0, 0);
-
-        lv_obj_t *durationContainer = lv_cont_create(win, NULL);
-        lv_cont_set_layout(durationContainer, LV_LAYOUT_PRETTY_MID);
-        lv_cont_set_fit2(durationContainer, LV_FIT_NONE, LV_FIT_TIGHT);
-        lv_obj_set_width(durationContainer, 140);
-
-        lv_obj_t *durationLabel = lv_label_create(durationContainer, NULL);
-        lv_label_set_text(durationLabel, "Duration");
-        lv_label_set_align(durationLabel, LV_LABEL_ALIGN_LEFT);
-
-        lv_obj_t *durationHoursRoller = lv_roller_create(durationContainer, NULL);
-        lv_roller_set_options(durationHoursRoller, "00\n01\n02\n03\n04\n05\n06\n07\n08", LV_ROLLER_MODE_INFINITE);
-        lv_roller_set_visible_row_count(durationHoursRoller, 2);
-        lv_obj_align(durationHoursRoller, NULL, LV_ALIGN_CENTER, 0, 0);
-
-        lv_obj_t *durationMinutesRoller = lv_roller_create(durationContainer, NULL);
-        lv_roller_set_options(durationMinutesRoller, "00\n15\n30\n45", LV_ROLLER_MODE_INFINITE);
-        lv_roller_set_visible_row_count(durationMinutesRoller, 2);
-        lv_obj_align(durationMinutesRoller, NULL, LV_ALIGN_CENTER, 0, 0);
-
-        /*lv_obj_t *btnApply = lv_btn_create(win, NULL);
-        lv_obj_set_event_cb(btnApply, NULL);
-        lv_cont_set_fit2(btnApply, LV_FIT_PARENT, LV_FIT_TIGHT);*/
+        createTimerItemDetailsWindow(true, lv_list_get_btn_index(timerList, btn) - 1);
     }
+}
+
+void createTimerItemDetailsWindow(bool update, int timerItemIndex)
+{
+    char winTitle[20];
+
+    if (update)
+    {
+        sprintf(winTitle, "EDIT TIMER %d", timerItemIndex);
+    }
+    else
+    {
+        sprintf(winTitle, "ADD TIMER %d", timerItemIndex + 1);
+    }
+
+    /** Window **/
+    lv_obj_t *win = lv_win_create(lv_scr_act(), NULL);
+    lv_win_set_title(win, winTitle);
+    lv_win_set_layout(win, LV_LAYOUT_PRETTY_TOP);
+
+    /* Titlebar buttons */
+    lv_obj_t *close_btn = lv_win_add_btn(win, LV_SYMBOL_CLOSE);
+    lv_obj_set_event_cb(close_btn, lv_win_close_event_cb);
+
+    if (update)
+    {
+        lv_obj_t *delete_btn = lv_win_add_btn(win, LV_SYMBOL_TRASH);
+        lv_obj_set_event_cb(delete_btn, timer_item_delete_event_cb);
+    }
+
+    lv_obj_t *save_btn = lv_win_add_btn(win, LV_SYMBOL_SAVE);
+    lv_obj_set_event_cb(save_btn, NULL);
+
+    /** Content **/
+
+    /* Repetition area */
+    lv_obj_t *repetitionContainer = lv_cont_create(win, NULL);
+    lv_cont_set_layout(repetitionContainer, LV_LAYOUT_PRETTY_MID);
+    lv_cont_set_fit2(repetitionContainer, LV_FIT_NONE, LV_FIT_TIGHT);
+    lv_obj_set_width(repetitionContainer, 140);
+
+    lv_obj_t *repetitionLabel = lv_label_create(repetitionContainer, NULL);
+    lv_label_set_text(repetitionLabel, "Repetition");
+    lv_label_set_align(repetitionLabel, LV_LABEL_ALIGN_LEFT);
+
+    lv_obj_t *repeatDropDown = lv_dropdown_create(repetitionContainer, NULL);
+    lv_dropdown_set_options(repeatDropDown, "none\nhourly\ndaily\nweekly");
+
+    if (update)
+    {
+        lv_dropdown_set_selected(repeatDropDown, timerItems[timerItemIndex]->getRepeat());
+    }
+
+    /* Weekday area */
+    lv_obj_t *weekdayContainer = lv_cont_create(win, NULL);
+    lv_cont_set_layout(weekdayContainer, LV_LAYOUT_PRETTY_MID);
+    lv_cont_set_fit2(weekdayContainer, LV_FIT_NONE, LV_FIT_TIGHT);
+    lv_obj_set_width(weekdayContainer, 140);
+
+    lv_obj_t *weekdayLabel = lv_label_create(weekdayContainer, NULL);
+    lv_label_set_text(weekdayLabel, "Weekday");
+    lv_label_set_align(weekdayLabel, LV_LABEL_ALIGN_LEFT);
+
+    lv_obj_t *weekdayDropDown = lv_dropdown_create(weekdayContainer, NULL);
+    lv_dropdown_set_options(weekdayDropDown, "Monday\nTuesday\nWednesday\nThurday\nFriday\nSaturday\nSunday");
+
+    if (update)
+    {
+        lv_dropdown_set_selected(weekdayDropDown, timerItems[timerItemIndex]->getWeekday());
+    }
+
+    /* Start time area */
+    lv_obj_t *startTimeContainer = lv_cont_create(win, NULL);
+    lv_cont_set_layout(startTimeContainer, LV_LAYOUT_PRETTY_MID);
+    lv_cont_set_fit2(startTimeContainer, LV_FIT_NONE, LV_FIT_TIGHT);
+    lv_obj_set_width(startTimeContainer, 140);
+
+    lv_obj_t *startTimeLabel = lv_label_create(startTimeContainer, NULL);
+    lv_label_set_text(startTimeLabel, "   Start   ");
+    lv_label_set_align(startTimeLabel, LV_LABEL_ALIGN_LEFT);
+
+    lv_obj_t *startHoursRoller = lv_roller_create(startTimeContainer, NULL);
+    lv_roller_set_options(startHoursRoller, "00\n01\n02\n03\n04\n05\n06\n07\n08\n09\n10\11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23", LV_ROLLER_MODE_INFINITE);
+    lv_roller_set_visible_row_count(startHoursRoller, 2);
+    lv_obj_align(startHoursRoller, NULL, LV_ALIGN_CENTER, 0, 0);
+
+    if (update)
+    {
+        lv_roller_set_selected(startHoursRoller, timerItems[timerItemIndex]->getHour(), LV_ANIM_ON);
+    }
+
+    lv_obj_t *startMinutesRoller = lv_roller_create(startTimeContainer, NULL);
+    lv_roller_set_options(startMinutesRoller, "00\n15\n30\n45", LV_ROLLER_MODE_INFINITE);
+    lv_roller_set_visible_row_count(startMinutesRoller, 2);
+    lv_obj_align(startMinutesRoller, NULL, LV_ALIGN_CENTER, 0, 0);
+
+    if (update)
+    {
+        lv_roller_set_selected(startMinutesRoller, timerItems[timerItemIndex]->getMinute(), LV_ANIM_ON);
+    }
+
+    /* Duration area */
+    lv_obj_t *durationContainer = lv_cont_create(win, NULL);
+    lv_cont_set_layout(durationContainer, LV_LAYOUT_PRETTY_MID);
+    lv_cont_set_fit2(durationContainer, LV_FIT_NONE, LV_FIT_TIGHT);
+    lv_obj_set_width(durationContainer, 140);
+
+    lv_obj_t *durationLabel = lv_label_create(durationContainer, NULL);
+    lv_label_set_text(durationLabel, "Duration");
+    lv_label_set_align(durationLabel, LV_LABEL_ALIGN_LEFT);
+
+    lv_obj_t *durationHoursRoller = lv_roller_create(durationContainer, NULL);
+    lv_roller_set_options(durationHoursRoller, "00\n01\n02\n03\n04\n05\n06\n07\n08", LV_ROLLER_MODE_INFINITE);
+    lv_roller_set_visible_row_count(durationHoursRoller, 2);
+    lv_obj_align(durationHoursRoller, NULL, LV_ALIGN_CENTER, 0, 0);
+
+    lv_obj_t *durationMinutesRoller = lv_roller_create(durationContainer, NULL);
+    lv_roller_set_options(durationMinutesRoller, "00\n15\n30\n45", LV_ROLLER_MODE_INFINITE);
+    lv_roller_set_visible_row_count(durationMinutesRoller, 2);
+    lv_obj_align(durationMinutesRoller, NULL, LV_ALIGN_CENTER, 0, 0);
 }
 
 void updateFanSpeed(fan_speed_t fanSpeed)
@@ -489,4 +564,21 @@ void updateLampState(lamp_state_t lampsState)
         Serial.println("Lamp switch turned on.");
         break;
     }
+}
+
+void removeTimerItemByIndex(int timerItemindex, lv_obj_t *win)
+{
+    for (int i = 0; i < currentTimerItemCount; i++)
+    {
+        if (i >= timerItemindex)
+        {
+            timerItems[i] = timerItems[i + 1];
+        }
+    }
+
+    lv_list_remove(timerList, timerItemindex);
+
+    currentTimerItemCount--;
+
+    lv_obj_del(win);
 }

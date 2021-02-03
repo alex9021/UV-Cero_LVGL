@@ -5,6 +5,8 @@
 #include <Classes\UVC_Lamp.h>
 #include <Classes\UVC_Fan.h>
 #include <Classes\UVC_Timer_Item.h>
+#include <custom_symbols_regular.h>
+#include <custom_symbols_solid.h>
 
 #define LAMP_SWITCH_PIN 13
 #define FAN_PWM_PIN 15
@@ -76,3 +78,4 @@ extern lamp_state_t currentLampState;
 extern bool SD_CARD_AVAILABLE;
 
 #endif /*UVCERO_H*/
+

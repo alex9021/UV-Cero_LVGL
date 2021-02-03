@@ -15,9 +15,13 @@ private:
 
 public:
   UVC_Timer_Item(uint8_t id, uint8_t weekDay, uint8_t hour, uint8_t minute, uint32_t duration, uint8_t repeat);
+  int getDuration();
+  int getHour();
+  int getMinute();
+  int getRepeat();
+  int getWeekday();
   String getWeekdayAsString();
   String getStartTimeAsString();
-  int getDuration();
   String getRepeatAsString();
 };
 
