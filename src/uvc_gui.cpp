@@ -65,6 +65,7 @@ void create_gui(void)
     lv_style_set_value_align(&style_box, LV_STATE_DEFAULT, LV_ALIGN_OUT_TOP_LEFT);
     lv_style_set_value_ofs_y(&style_box, LV_STATE_DEFAULT, -LV_DPX(10));
     lv_style_set_margin_top(&style_box, LV_STATE_DEFAULT, LV_DPX(10));    
+    lv_style_set_text_font(&style_box,LV_STATE_DEFAULT, &lv_font_montserrat_12_subpx);
 
     create_controls(t1);
     create_components_status(t2);
@@ -475,7 +476,7 @@ void createTimerItemDetailsWindow(bool update, int timerItemIndex)
     lv_obj_set_width(startTimeContainer, 140);
 
     lv_obj_t *startTimeLabel = lv_label_create(startTimeContainer, NULL);
-    lv_label_set_text(startTimeLabel, "   Start   ");
+    lv_label_set_text(startTimeLabel, "      Start      ");
     lv_label_set_align(startTimeLabel, LV_LABEL_ALIGN_LEFT);
 
     lv_obj_t *startHoursRoller = lv_roller_create(startTimeContainer, NULL);
@@ -505,7 +506,7 @@ void createTimerItemDetailsWindow(bool update, int timerItemIndex)
     lv_obj_set_width(durationContainer, 140);
 
     lv_obj_t *durationLabel = lv_label_create(durationContainer, NULL);
-    lv_label_set_text(durationLabel, "Duration");
+    lv_label_set_text(durationLabel, "    Duration    ");
     lv_label_set_align(durationLabel, LV_LABEL_ALIGN_LEFT);
 
     lv_obj_t *durationHoursRoller = lv_roller_create(durationContainer, NULL);
