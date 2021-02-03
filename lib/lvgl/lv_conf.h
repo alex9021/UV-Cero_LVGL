@@ -417,7 +417,7 @@ typedef void * lv_indev_drv_user_data_t;            /*Type of user data in the i
  * #define LV_FONT_CUSTOM_DECLARE LV_FONT_DECLARE(my_font_1) \
  *                                LV_FONT_DECLARE(my_font_2)
  */
-#define LV_FONT_CUSTOM_DECLARE LV_FONT_DECLARE(custom_symbols_solid)
+#define LV_FONT_CUSTOM_DECLARE LV_FONT_DECLARE(pt_sans_regular_14_subpx)                        
 
 /* Enable it if you have fonts with a lot of characters.
  * The limit depends on the font size, font face and bpp
@@ -477,10 +477,10 @@ typedef void * lv_font_user_data_t;
 #define LV_THEME_DEFAULT_COLOR_PRIMARY      lv_color_hex(0x01a2b1)
 #define LV_THEME_DEFAULT_COLOR_SECONDARY    lv_color_hex(0x44d1b6)
 #define LV_THEME_DEFAULT_FLAG               LV_THEME_MATERIAL_FLAG_DARK
-#define LV_THEME_DEFAULT_FONT_SMALL         &lv_font_montserrat_10
-#define LV_THEME_DEFAULT_FONT_NORMAL        &lv_font_montserrat_12
-#define LV_THEME_DEFAULT_FONT_SUBTITLE      &lv_font_montserrat_12
-#define LV_THEME_DEFAULT_FONT_TITLE         &lv_font_montserrat_14
+#define LV_THEME_DEFAULT_FONT_SMALL         &pt_sans_regular_14_subpx /* &lv_font_montserrat_10 */
+#define LV_THEME_DEFAULT_FONT_NORMAL        &pt_sans_regular_14_subpx /* &lv_font_montserrat_12 */
+#define LV_THEME_DEFAULT_FONT_SUBTITLE      &pt_sans_regular_14_subpx /* &lv_font_montserrat_12 */
+#define LV_THEME_DEFAULT_FONT_TITLE         &pt_sans_regular_14_subpx /* &lv_font_montserrat_14 */
 
 /*=================
  *  Text settings

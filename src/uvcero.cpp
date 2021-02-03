@@ -14,6 +14,12 @@ bool SD_CARD_AVAILABLE = false;
 void init()
 {
     Wire.begin(I2C_SDA_PIN,I2C_SCL_PIN);
+
+    gpio_expander.write8(LOW);
+    gpio_expander.write(4, HIGH);
+    gpio_expander.write(5, HIGH);
+    gpio_expander.write(6, HIGH);
+    gpio_expander.write(7, HIGH);
     /**
       @ToDo: read data from sd card
     **/

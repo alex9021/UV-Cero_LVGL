@@ -65,7 +65,6 @@ void create_gui(void)
     lv_style_set_value_align(&style_box, LV_STATE_DEFAULT, LV_ALIGN_OUT_TOP_LEFT);
     lv_style_set_value_ofs_y(&style_box, LV_STATE_DEFAULT, -LV_DPX(10));
     lv_style_set_margin_top(&style_box, LV_STATE_DEFAULT, LV_DPX(10));
-    lv_style_set_text_font(&style_box, LV_STATE_DEFAULT, &lv_font_montserrat_12_subpx);
 
     create_controls(t1);
     create_components_status(t2);
@@ -75,7 +74,6 @@ void create_gui(void)
     /* show splash screen */
     lv_obj_t *splashscreen = lv_img_create(lv_scr_act(), NULL);
     lv_img_set_src(splashscreen, &logo_dark);
-
     lv_obj_fade_out(splashscreen, 0, 2000);
 
     lv_task_create(sensor_updater, 1000, LV_TASK_PRIO_LOWEST, NULL);
@@ -85,7 +83,7 @@ static void create_controls(lv_obj_t *parent)
 {
     lv_page_set_scrl_layout(parent, LV_LAYOUT_PRETTY_TOP);
 
-    lv_coord_t grid_w = lv_page_get_width_grid(parent, 1, 1);
+    //lv_coord_t grid_w = lv_page_get_width_grid(parent, 1, 1);
 
     lv_obj_t *deviceLabel = lv_label_create(parent, NULL);
     lv_label_set_text(deviceLabel, "ReTecCom UV-Cero");
@@ -100,14 +98,6 @@ static void create_controls(lv_obj_t *parent)
     lv_cont_set_fit2(h, LV_FIT_PARENT, LV_FIT_TIGHT);
     lv_cont_set_layout(h, LV_LAYOUT_PRETTY_TOP);
 
-    /*
-    enable_switch_label = lv_label_create(h, NULL);
-    lv_label_set_text(enable_switch_label, "ENABLE");
-
-    enable_switch = lv_switch_create(h, NULL);
-    lv_obj_set_event_cb(enable_switch, enable_switch_event_cb);
-    */
-
     lv_obj_t *fan_speed_label = lv_label_create(h, NULL);
     lv_label_set_text(fan_speed_label, "AIR PURIFICATION");
     lv_obj_set_style_local_margin_top(fan_speed_label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_DPX(10));
@@ -115,7 +105,6 @@ static void create_controls(lv_obj_t *parent)
     fan_speed_slider = lv_slider_create(h, NULL);
     lv_slider_set_value(fan_speed_slider, FAN_SPEED_HIGH, LV_ANIM_ON);
     lv_slider_set_range(fan_speed_slider, FAN_SPEED_OFF, FAN_SPEED_HIGH);
-    //lv_obj_set_height(fan_speed_slider, 12);
     lv_obj_set_event_cb(fan_speed_slider, fan_speed_slider_event_cb);
     lv_obj_set_width_fit(h, lv_obj_get_width_fit(h));
 
@@ -146,28 +135,28 @@ static void create_components_status(lv_obj_t *parent)
     lv_obj_set_width(fan_status_container, grid_w);
 
     lv_obj_t *fan_1_status_label = lv_label_create(fan_status_container, NULL);
-    lv_label_set_text(fan_1_status_label, CUSTOM_SYMBOL_SOLID_FAN " FAN 1");
+    lv_label_set_text(fan_1_status_label, " FAN 1");
 
     fan_1_status_led = lv_led_create(fan_status_container, NULL);
     lv_obj_align(fan_1_status_led, NULL, LV_ALIGN_CENTER, 0, 0);
     lv_obj_set_size(fan_1_status_led, 16, 16);
 
     lv_obj_t *fan_2_status_label = lv_label_create(fan_status_container, NULL);
-    lv_label_set_text(fan_2_status_label, CUSTOM_SYMBOL_SOLID_FAN " FAN 2");
+    lv_label_set_text(fan_2_status_label, " FAN 2");
 
     fan_2_status_led = lv_led_create(fan_status_container, NULL);
     lv_obj_align(fan_2_status_led, NULL, LV_ALIGN_CENTER, 0, 0);
     lv_obj_set_size(fan_2_status_led, 16, 16);
 
     lv_obj_t *fan_3_status_label = lv_label_create(fan_status_container, NULL);
-    lv_label_set_text(fan_3_status_label, CUSTOM_SYMBOL_SOLID_FAN " FAN 3");
+    lv_label_set_text(fan_3_status_label, " FAN 3");
 
     fan_3_status_led = lv_led_create(fan_status_container, NULL);
     lv_obj_align(fan_3_status_led, NULL, LV_ALIGN_CENTER, 0, 0);
     lv_obj_set_size(fan_3_status_led, 16, 16);
 
     lv_obj_t *fan_4_status_label = lv_label_create(fan_status_container, NULL);
-    lv_label_set_text(fan_4_status_label, CUSTOM_SYMBOL_SOLID_FAN " FAN 4");
+    lv_label_set_text(fan_4_status_label, " FAN 4");
 
     fan_4_status_led = lv_led_create(fan_status_container, NULL);
     lv_obj_align(fan_4_status_led, NULL, LV_ALIGN_CENTER, 0, 0);
@@ -182,28 +171,28 @@ static void create_components_status(lv_obj_t *parent)
     lv_obj_set_width(lamp_status_container, grid_w);
 
     lv_obj_t *lamp_1_status_label = lv_label_create(lamp_status_container, NULL);
-    lv_label_set_text(lamp_1_status_label, CUSTOM_SYMBOL_SOLID_LIGHTBULB " LAMP 1");
+    lv_label_set_text(lamp_1_status_label, " LAMP 1");
 
     lamp_1_status_led = lv_led_create(lamp_status_container, NULL);
     lv_obj_align(lamp_1_status_led, NULL, LV_ALIGN_CENTER, 0, 0);
     lv_obj_set_size(lamp_1_status_led, 16, 16);
 
     lv_obj_t *lamp_2_status_label = lv_label_create(lamp_status_container, NULL);
-    lv_label_set_text(lamp_2_status_label, CUSTOM_SYMBOL_SOLID_LIGHTBULB " LAMP 2");
+    lv_label_set_text(lamp_2_status_label, " LAMP 2");
 
     lamp_2_status_led = lv_led_create(lamp_status_container, NULL);
     lv_obj_align(lamp_2_status_led, NULL, LV_ALIGN_CENTER, 0, 0);
     lv_obj_set_size(lamp_2_status_led, 16, 16);
 
     lv_obj_t *lamp_3_status_label = lv_label_create(lamp_status_container, NULL);
-    lv_label_set_text(lamp_3_status_label, CUSTOM_SYMBOL_SOLID_LIGHTBULB " LAMP 3");
+    lv_label_set_text(lamp_3_status_label, " LAMP 3");
 
     lamp_3_status_led = lv_led_create(lamp_status_container, NULL);
     lv_obj_align(lamp_3_status_led, NULL, LV_ALIGN_CENTER, 0, 0);
     lv_obj_set_size(lamp_3_status_led, 16, 16);
 
     lv_obj_t *lamp_4_status_label = lv_label_create(lamp_status_container, NULL);
-    lv_label_set_text(lamp_4_status_label, CUSTOM_SYMBOL_SOLID_LIGHTBULB " LAMP 4");
+    lv_label_set_text(lamp_4_status_label, " LAMP 4");
 
     lamp_4_status_led = lv_led_create(lamp_status_container, NULL);
     lv_obj_align(lamp_4_status_led, NULL, LV_ALIGN_CENTER, 0, 0);
@@ -279,57 +268,9 @@ static void sensor_updater(lv_task_t *t)
         break;
     }
 
-    /*switch (currentLampState)
-    {
-    case LAMPS_OFF:
-        lv_switch_off(enable_switch, LV_ANIM_ON);
-        break;
-
-    case LAMPS_ON:
-        lv_switch_on(enable_switch, LV_ANIM_ON);
-        break;
-    }*/
-
     gpio_expander.read8();
 
     if (gpio_expander.read(0) == HIGH)
-    {
-        lv_led_on(fan_1_status_led);
-    }
-    else
-    {
-        lv_led_off(fan_1_status_led);
-    }
-
-    if (gpio_expander.read(1) == HIGH)
-    {
-        lv_led_on(fan_2_status_led);
-    }
-    else
-    {
-        lv_led_off(fan_2_status_led);
-    }
-
-    if (gpio_expander.read(2) == HIGH)
-    {
-        lv_led_on(fan_3_status_led);
-    }
-    else
-    {
-        lv_led_off(fan_3_status_led);
-    }
-
-    if (gpio_expander.read(3) == HIGH)
-    {
-        lv_led_on(lamp_1_status_led);
-    }
-    else
-    {
-        lv_led_off(lamp_1_status_led);
-    }
-    
-
-    if (gpio_expander.read(4) == HIGH)
     {
         lv_led_on(lamp_2_status_led);
     }
@@ -338,7 +279,7 @@ static void sensor_updater(lv_task_t *t)
         lv_led_off(lamp_2_status_led);
     }
 
-    if (gpio_expander.read(5) == HIGH)
+    if (gpio_expander.read(1) == HIGH)
     {
         lv_led_on(fan_2_status_led);
     }
@@ -347,7 +288,7 @@ static void sensor_updater(lv_task_t *t)
         lv_led_off(lamp_3_status_led);
     }
 
-    if (gpio_expander.read(6) == HIGH)
+    if (gpio_expander.read(2) == HIGH)
     {
         lv_led_on(lamp_3_status_led);
     }
@@ -356,14 +297,51 @@ static void sensor_updater(lv_task_t *t)
         lv_led_off(fan_3_status_led);
     }
 
-    if (gpio_expander.read(7) == HIGH)
+    if (gpio_expander.read(3) == HIGH)
     {
         lv_led_on(lamp_4_status_led);
     }
     else
     {
         lv_led_off(lamp_4_status_led);
+    }    
+
+    if (gpio_expander.read(4) == LOW)
+    {
+        lv_led_on(fan_1_status_led);
     }
+    else
+    {
+        lv_led_off(fan_1_status_led);
+    }
+
+    if (gpio_expander.read(5) == LOW)
+    {
+        lv_led_on(fan_2_status_led);
+    }
+    else
+    {
+        lv_led_off(fan_2_status_led);
+    }
+
+    if (gpio_expander.read(6) == LOW)
+    {
+        lv_led_on(fan_3_status_led);
+    }
+    else
+    {
+        lv_led_off(fan_3_status_led);
+    }
+
+    if (gpio_expander.read(7) == LOW)
+    {
+        lv_led_on(lamp_1_status_led);
+    }
+    else
+    {
+        lv_led_off(lamp_1_status_led);
+    }
+    
 
     char now[25] = "";
     sprintf(now, "%d/%02d/%02d %02d:%02d", rtc.day(), rtc.month(), rtc.day(), rtc.hour(), rtc.minute());
@@ -404,27 +382,6 @@ static void fan_speed_slider_event_cb(lv_obj_t *slider, lv_event_t event)
         break;
     }
 }
-
-/*
-static void enable_switch_event_cb(lv_obj_t *sw, lv_event_t event)
-{
-    if (event == LV_EVENT_VALUE_CHANGED)
-    {
-        switch (lv_slider_get_value(sw))
-        {
-        case LAMPS_OFF:
-            updateLampState(LAMPS_OFF);
-            updateFanSpeed(FAN_SPEED_OFF);
-            break;
-
-        case LAMPS_ON:
-            updateLampState(LAMPS_ON);
-            updateFanSpeed(FAN_SPEED_LOW);
-            break;
-        }
-    }
-}
-*/
 
 static void timer_item_delete_event_cb(lv_obj_t *delete_btn, lv_event_t event)
 {
