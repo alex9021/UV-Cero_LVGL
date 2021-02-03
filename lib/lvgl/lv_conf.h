@@ -20,8 +20,8 @@
  *====================*/
 
 /* Maximal horizontal and vertical resolution to support by the library.*/
-#define LV_HOR_RES_MAX          (480)
-#define LV_VER_RES_MAX          (320)
+#define LV_HOR_RES_MAX          (320)
+#define LV_VER_RES_MAX          (240)
 
 /* Color depth:
  * - 1:  1 byte per pixel
@@ -179,16 +179,16 @@ typedef void * lv_anim_user_data_t;
 #define LV_USE_OPA_SCALE        1
 
 /* 1: Use image zoom and rotation*/
-#define LV_USE_IMG_TRANSFORM    1
+#define LV_USE_IMG_TRANSFORM    0
 
 /* 1: Enable object groups (for keyboard/encoder navigation) */
-#define LV_USE_GROUP            1
+#define LV_USE_GROUP            0
 #if LV_USE_GROUP
 typedef void * lv_group_user_data_t;
 #endif  /*LV_USE_GROUP*/
 
 /* 1: Enable GPU interface*/
-#define LV_USE_GPU              0   /*Only enables `gpu_fill_cb` and `gpu_blend_cb` in the disp. drv- */
+#define LV_USE_GPU              1   /*Only enables `gpu_fill_cb` and `gpu_blend_cb` in the disp. drv- */
 #define LV_USE_GPU_STM32_DMA2D  0
 /*If enabling LV_USE_GPU_STM32_DMA2D, LV_GPU_DMA2D_CMSIS_INCLUDE must be defined to include path of CMSIS header of target processor
 e.g. "stm32f769xx.h" or "stm32f429xx.h" */
@@ -240,7 +240,7 @@ typedef void * lv_fs_drv_user_data_t;
  * With complex image decoders (e.g. PNG or JPG) caching can save the continuous open/decode of images.
  * However the opened images might consume additional RAM.
  * Set it to 0 to disable caching */
-#define LV_IMG_CACHE_DEF_SIZE       1
+#define LV_IMG_CACHE_DEF_SIZE       0
 
 /*Declare the type of the user data of image decoder (can be e.g. `void *`, `int`, `struct`)*/
 typedef void * lv_img_decoder_user_data_t;
@@ -340,7 +340,7 @@ typedef void * lv_indev_drv_user_data_t;            /*Type of user data in the i
  * The behavior of asserts can be overwritten by redefining them here.
  * E.g. #define LV_ASSERT_MEM(p)  <my_assert_code>
  */
-#define LV_USE_DEBUG        1
+#define LV_USE_DEBUG        0
 #if LV_USE_DEBUG
 
 /*Check if the parameter is NULL. (Quite fast) */
@@ -379,9 +379,9 @@ typedef void * lv_indev_drv_user_data_t;            /*Type of user data in the i
 /* Montserrat fonts with bpp = 4
  * https://fonts.google.com/specimen/Montserrat  */
 #define LV_FONT_MONTSERRAT_8     0
-#define LV_FONT_MONTSERRAT_10    1
-#define LV_FONT_MONTSERRAT_12    1
-#define LV_FONT_MONTSERRAT_14    1
+#define LV_FONT_MONTSERRAT_10    0
+#define LV_FONT_MONTSERRAT_12    0
+#define LV_FONT_MONTSERRAT_14    0
 #define LV_FONT_MONTSERRAT_16    0
 #define LV_FONT_MONTSERRAT_18    0
 #define LV_FONT_MONTSERRAT_20    0
@@ -401,7 +401,7 @@ typedef void * lv_indev_drv_user_data_t;            /*Type of user data in the i
 #define LV_FONT_MONTSERRAT_48    0
 
 /* Demonstrate special features */
-#define LV_FONT_MONTSERRAT_12_SUBPX      1
+#define LV_FONT_MONTSERRAT_12_SUBPX      0
 #define LV_FONT_MONTSERRAT_28_COMPRESSED 0  /*bpp = 3*/
 #define LV_FONT_DEJAVU_16_PERSIAN_HEBREW 0  /*Hebrew, Arabic, PErisan letters and all their forms*/
 #define LV_FONT_SIMSUN_16_CJK            0  /*1000 most common CJK radicals*/
@@ -427,7 +427,7 @@ typedef void * lv_indev_drv_user_data_t;            /*Type of user data in the i
 /* Enables/disables support for compressed fonts. If it's disabled, compressed
  * glyphs cannot be processed by the library and won't be rendered.
  */
-#define LV_USE_FONT_COMPRESSED 1
+#define LV_USE_FONT_COMPRESSED 0
 
 /* Enable subpixel rendering */
 #define LV_USE_FONT_SUBPX 1
@@ -573,7 +573,7 @@ typedef void * lv_obj_user_data_t;
  */
 
 /*Arc (dependencies: -)*/
-#define LV_USE_ARC      1
+#define LV_USE_ARC      0
 
 /*Bar (dependencies: -)*/
 #define LV_USE_BAR      1
@@ -585,19 +585,19 @@ typedef void * lv_obj_user_data_t;
 #define LV_USE_BTNMATRIX     1
 
 /*Calendar (dependencies: -)*/
-#define LV_USE_CALENDAR 1
+#define LV_USE_CALENDAR 0
 #if LV_USE_CALENDAR
 #  define LV_CALENDAR_WEEK_STARTS_MONDAY    0
 #endif
 
 /*Canvas (dependencies: lv_img)*/
-#define LV_USE_CANVAS   1
+#define LV_USE_CANVAS   0
 
 /*Check box (dependencies: lv_btn, lv_label)*/
-#define LV_USE_CHECKBOX       1
+#define LV_USE_CHECKBOX       0
 
 /*Chart (dependencies: -)*/
-#define LV_USE_CHART    1
+#define LV_USE_CHART    0
 #if LV_USE_CHART
 #  define LV_CHART_AXIS_TICK_LABEL_MAX_LEN    256
 #endif
@@ -606,7 +606,7 @@ typedef void * lv_obj_user_data_t;
 #define LV_USE_CONT     1
 
 /*Color picker (dependencies: -*/
-#define LV_USE_CPICKER   1
+#define LV_USE_CPICKER   0
 
 /*Drop down list (dependencies: lv_page, lv_label, lv_symbol_def.h)*/
 #define LV_USE_DROPDOWN    1
@@ -616,7 +616,7 @@ typedef void * lv_obj_user_data_t;
 #endif
 
 /*Gauge (dependencies:lv_bar, lv_linemeter)*/
-#define LV_USE_GAUGE    1
+#define LV_USE_GAUGE    0
 
 /*Image (dependencies: lv_label*/
 #define LV_USE_IMG      1
@@ -629,7 +629,7 @@ typedef void * lv_obj_user_data_t;
 #endif
 
 /*Keyboard (dependencies: lv_btnm)*/
-#define LV_USE_KEYBOARD       1
+#define LV_USE_KEYBOARD       0
 
 /*Label (dependencies: -*/
 #define LV_USE_LABEL    1
@@ -655,7 +655,7 @@ typedef void * lv_obj_user_data_t;
 #endif
 
 /*Line (dependencies: -*/
-#define LV_USE_LINE     1
+#define LV_USE_LINE     0
 
 /*List (dependencies: lv_page, lv_btn, lv_label, (lv_img optionally for icons ))*/
 #define LV_USE_LIST     1
@@ -665,7 +665,7 @@ typedef void * lv_obj_user_data_t;
 #endif
 
 /*Line meter (dependencies: *;)*/
-#define LV_USE_LINEMETER   1
+#define LV_USE_LINEMETER   0
 #if LV_USE_LINEMETER
 /* Draw line more precisely at cost of performance.
  * Useful if there are lot of lines any minor are visible
@@ -677,7 +677,7 @@ typedef void * lv_obj_user_data_t;
 #endif
 
 /*Mask (dependencies: -)*/
-#define LV_USE_OBJMASK  1
+#define LV_USE_OBJMASK  0
 
 /*Message box (dependencies: lv_rect, lv_btnm, lv_label)*/
 #define LV_USE_MSGBOX     1
@@ -690,7 +690,7 @@ typedef void * lv_obj_user_data_t;
 #endif
 
 /*Preload (dependencies: lv_arc, lv_anim)*/
-#define LV_USE_SPINNER      1
+#define LV_USE_SPINNER      0
 #if LV_USE_SPINNER != 0
 #  define LV_SPINNER_DEF_ARC_LENGTH   60      /*[deg]*/
 #  define LV_SPINNER_DEF_SPIN_TIME    1000    /*[ms]*/
@@ -711,13 +711,13 @@ typedef void * lv_obj_user_data_t;
 #define LV_USE_SLIDER    1
 
 /*Spinbox (dependencies: lv_ta)*/
-#define LV_USE_SPINBOX       1
+#define LV_USE_SPINBOX       0
 
 /*Switch (dependencies: lv_slider)*/
 #define LV_USE_SWITCH       1
 
 /*Text area (dependencies: lv_label, lv_page)*/
-#define LV_USE_TEXTAREA       1
+#define LV_USE_TEXTAREA       0
 #if LV_USE_TEXTAREA != 0
 #  define LV_TEXTAREA_DEF_CURSOR_BLINK_TIME 400     /*ms*/
 #  define LV_TEXTAREA_DEF_PWD_SHOW_TIME     1500    /*ms*/
