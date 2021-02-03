@@ -304,7 +304,7 @@ static void sensor_updater(lv_task_t *t)
     else
     {
         lv_led_off(lamp_4_status_led);
-    }    
+    }
 
     if (gpio_expander.read(4) == LOW)
     {
@@ -341,7 +341,6 @@ static void sensor_updater(lv_task_t *t)
     {
         lv_led_off(lamp_1_status_led);
     }
-    
 
     char now[25] = "";
     sprintf(now, "%d/%02d/%02d %02d:%02d", rtc.day(), rtc.month(), rtc.day(), rtc.hour(), rtc.minute());
@@ -530,6 +529,24 @@ void createTimerItemDetailsWindow(bool update, int timerItemIndex)
     lv_roller_set_options(durationMinutesRoller, "00\n15\n30\n45", LV_ROLLER_MODE_INFINITE);
     lv_roller_set_visible_row_count(durationMinutesRoller, 2);
     lv_obj_align(durationMinutesRoller, NULL, LV_ALIGN_CENTER, 0, 0);
+
+    /* Speed area */
+    lv_obj_t *speedContainer = lv_cont_create(win, NULL);
+    lv_cont_set_layout(speedContainer, LV_LAYOUT_PRETTY_MID);
+    lv_cont_set_fit2(speedContainer, LV_FIT_NONE, LV_FIT_TIGHT);
+    lv_obj_set_width(speedContainer, 290);
+
+    lv_obj_t *fanSpeedLabel = lv_label_create(speedContainer, NULL);
+    lv_label_set_text(fanSpeedLabel, "AIR PURIFICATION");
+    lv_label_set_align(fanSpeedLabel, LV_LABEL_ALIGN_LEFT);
+
+    lv_obj_t *fanSpeedDropDown = lv_dropdown_create(speedContainer, NULL);
+    lv_dropdown_set_options(fanSpeedDropDown, "LOW\nMEDIUM\nHIGH");
+
+    if (update)
+    {
+        lv_dropdown_set_selected(fanSpeedDropDown, timerItems[timerItemIndex]->getSpeed() - 1);
+    }
 }
 
 void updateFanSpeed(fan_speed_t fanSpeed)

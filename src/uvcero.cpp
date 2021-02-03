@@ -38,10 +38,10 @@ void init()
 
     currentTimerItemCount = 0;
 
-    timerItems[currentTimerItemCount] = new UVC_Timer_Item(currentTimerItemCount, TIMER_ITEM_WEEKDAY_MONDAY, 10, 0, 60, TIMER_ITEM_REPEAT_DAILY);
+    timerItems[currentTimerItemCount] = new UVC_Timer_Item(currentTimerItemCount, TIMER_ITEM_WEEKDAY_MONDAY, 10, 0, 60, TIMER_ITEM_REPEAT_DAILY, FAN_SPEED_HIGH);
     currentTimerItemCount++;
-    timerItems[currentTimerItemCount] = new UVC_Timer_Item(currentTimerItemCount, TIMER_ITEM_WEEKDAY_TUESDAY, 12, 0, 120, TIMER_ITEM_REPEAT_WEEKLY);
+    timerItems[currentTimerItemCount] = new UVC_Timer_Item(currentTimerItemCount, TIMER_ITEM_WEEKDAY_TUESDAY, 12, 0, 120, TIMER_ITEM_REPEAT_WEEKLY, FAN_SPEED_MEDIUM);
     currentTimerItemCount++;
-    timerItems[currentTimerItemCount] = new UVC_Timer_Item(currentTimerItemCount, TIMER_ITEM_WEEKDAY_FRIDAY, 16, 45, 165, TIMER_ITEM_REPEAT_NONE);
+    timerItems[currentTimerItemCount] = new UVC_Timer_Item(currentTimerItemCount, TIMER_ITEM_WEEKDAY_FRIDAY, 16, 45, 165, TIMER_ITEM_REPEAT_NONE, FAN_SPEED_LOW);
     currentTimerItemCount++;
 }

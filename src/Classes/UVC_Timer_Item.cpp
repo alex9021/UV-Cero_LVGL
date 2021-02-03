@@ -1,5 +1,5 @@
 #include <Classes/UVC_Timer_Item.h>
-UVC_Timer_Item::UVC_Timer_Item(uint8_t id, uint8_t weekDay, uint8_t hour, uint8_t minute, uint32_t duration, uint8_t repeat)
+UVC_Timer_Item::UVC_Timer_Item(uint8_t id, uint8_t weekDay, uint8_t hour, uint8_t minute, uint16_t duration, uint8_t repeat, uint8_t speed)
 {
     _id = id;
     _weekDay = weekDay;
@@ -7,6 +7,7 @@ UVC_Timer_Item::UVC_Timer_Item(uint8_t id, uint8_t weekDay, uint8_t hour, uint8_
     _minute = minute;
     _duration = duration;
     _repeat = repeat;
+    _speed = speed;
 }
 
 String UVC_Timer_Item::getWeekdayAsString()
@@ -134,6 +135,11 @@ int UVC_Timer_Item::getHour()
 int UVC_Timer_Item::getMinute()
 {
     return _minute;
+}
+
+int UVC_Timer_Item::getSpeed()
+{
+    return _speed;
 }
 
 String UVC_Timer_Item::getRepeatAsString()
