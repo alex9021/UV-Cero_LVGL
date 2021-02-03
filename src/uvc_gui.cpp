@@ -16,15 +16,15 @@ static lv_obj_t *enable_switch_label;
 static lv_obj_t *enable_switch;
 */
 
-static lv_obj_t *fan_rpm_1;
-static lv_obj_t *fan_rpm_2;
-static lv_obj_t *fan_rpm_3;
-static lv_obj_t *fan_rpm_4;
+static lv_obj_t *fan_1_status_led;
+static lv_obj_t *fan_2_status_led;
+static lv_obj_t *fan_3_status_led;
+static lv_obj_t *fan_4_status_led;
 
-static lv_obj_t *lamp_lm_1;
-static lv_obj_t *lamp_lm_2;
-static lv_obj_t *lamp_lm_3;
-static lv_obj_t *lamp_lm_4;
+static lv_obj_t *lamp_1_status_led;
+static lv_obj_t *lamp_2_status_led;
+static lv_obj_t *lamp_3_status_led;
+static lv_obj_t *lamp_4_status_led;
 
 lv_obj_t *timerList;
 lv_obj_t *timerButtons[MAX_TIMER_COUNT];
@@ -64,8 +64,8 @@ void create_gui(void)
     lv_style_init(&style_box);
     lv_style_set_value_align(&style_box, LV_STATE_DEFAULT, LV_ALIGN_OUT_TOP_LEFT);
     lv_style_set_value_ofs_y(&style_box, LV_STATE_DEFAULT, -LV_DPX(10));
-    lv_style_set_margin_top(&style_box, LV_STATE_DEFAULT, LV_DPX(10));    
-    lv_style_set_text_font(&style_box,LV_STATE_DEFAULT, &lv_font_montserrat_12_subpx);
+    lv_style_set_margin_top(&style_box, LV_STATE_DEFAULT, LV_DPX(10));
+    lv_style_set_text_font(&style_box, LV_STATE_DEFAULT, &lv_font_montserrat_12_subpx);
 
     create_controls(t1);
     create_components_status(t2);
@@ -134,90 +134,80 @@ static void create_controls(lv_obj_t *parent)
 
 static void create_components_status(lv_obj_t *parent)
 {
-    lv_page_set_scrl_layout(parent, LV_LAYOUT_GRID);
+    lv_page_set_scrl_layout(parent, LV_LAYOUT_PRETTY_TOP);
+    lv_coord_t grid_w = lv_page_get_width_grid(parent, 2, 1);
 
-    lv_disp_size_t disp_size = lv_disp_get_size_category(NULL);
-    lv_coord_t grid_w = lv_page_get_width_grid(parent, disp_size <= LV_DISP_SIZE_SMALL ? 1 : 2, 1);
+    lv_obj_t *fan_status_container = lv_cont_create(parent, NULL);
+    lv_cont_set_layout(fan_status_container, LV_LAYOUT_PRETTY_TOP);
+    lv_obj_add_style(fan_status_container, LV_CONT_PART_MAIN, &style_box);
+    lv_obj_set_drag_parent(fan_status_container, true);
 
-    lv_obj_t *h = lv_cont_create(parent, NULL);
-    lv_cont_set_layout(h, LV_LAYOUT_PRETTY_TOP);
-    lv_obj_add_style(h, LV_CONT_PART_MAIN, &style_box);
-    lv_obj_set_drag_parent(h, true);
+    lv_cont_set_fit2(fan_status_container, LV_FIT_NONE, LV_FIT_TIGHT);
+    lv_obj_set_width(fan_status_container, grid_w);
 
-    lv_cont_set_fit2(h, LV_FIT_NONE, LV_FIT_TIGHT);
-    lv_obj_set_width(h, grid_w);
+    lv_obj_t *fan_1_status_label = lv_label_create(fan_status_container, NULL);
+    lv_label_set_text(fan_1_status_label, CUSTOM_SYMBOL_SOLID_FAN " FAN 1");
 
-    lv_obj_t *fan_rpm_1_label = lv_label_create(h, NULL);
-    lv_label_set_text(fan_rpm_1_label, CUSTOM_SYMBOL_SOLID_FAN " FAN 1");
+    fan_1_status_led = lv_led_create(fan_status_container, NULL);
+    lv_obj_align(fan_1_status_led, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_size(fan_1_status_led, 16, 16);
 
-    fan_rpm_1 = lv_bar_create(h, NULL);
-    lv_obj_set_size(fan_rpm_1, 170, 20);
-    lv_bar_set_range(fan_rpm_1, 0, 10000);
-    lv_bar_set_anim_time(fan_rpm_1, 500);
-    lv_bar_set_value(fan_rpm_1, fans[0]->getCurrentRPM(), LV_ANIM_ON);
+    lv_obj_t *fan_2_status_label = lv_label_create(fan_status_container, NULL);
+    lv_label_set_text(fan_2_status_label, CUSTOM_SYMBOL_SOLID_FAN " FAN 2");
 
-    lv_obj_t *fan_rpm_2_label = lv_label_create(h, NULL);
-    lv_label_set_text(fan_rpm_2_label, CUSTOM_SYMBOL_SOLID_FAN " FAN 2");
+    fan_2_status_led = lv_led_create(fan_status_container, NULL);
+    lv_obj_align(fan_2_status_led, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_size(fan_2_status_led, 16, 16);
 
-    fan_rpm_2 = lv_bar_create(h, NULL);
-    lv_obj_set_size(fan_rpm_2, 170, 20);
-    lv_bar_set_range(fan_rpm_2, 0, 10000);
-    lv_bar_set_anim_time(fan_rpm_2, 500);
-    lv_bar_set_value(fan_rpm_2, fans[1]->getCurrentRPM(), LV_ANIM_ON);
+    lv_obj_t *fan_3_status_label = lv_label_create(fan_status_container, NULL);
+    lv_label_set_text(fan_3_status_label, CUSTOM_SYMBOL_SOLID_FAN " FAN 3");
 
-    lv_obj_t *fan_rpm_3_label = lv_label_create(h, NULL);
-    lv_label_set_text(fan_rpm_3_label, CUSTOM_SYMBOL_SOLID_FAN " FAN 3");
+    fan_3_status_led = lv_led_create(fan_status_container, NULL);
+    lv_obj_align(fan_3_status_led, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_size(fan_3_status_led, 16, 16);
 
-    fan_rpm_3 = lv_bar_create(h, NULL);
-    lv_obj_set_size(fan_rpm_3, 170, 20);
-    lv_bar_set_range(fan_rpm_3, 0, 10000);
-    lv_bar_set_anim_time(fan_rpm_3, 500);
-    lv_bar_set_value(fan_rpm_3, fans[2]->getCurrentRPM(), LV_ANIM_ON);
+    lv_obj_t *fan_4_status_label = lv_label_create(fan_status_container, NULL);
+    lv_label_set_text(fan_4_status_label, CUSTOM_SYMBOL_SOLID_FAN " FAN 4");
 
-    lv_obj_t *fan_rpm_4_label = lv_label_create(h, NULL);
-    lv_label_set_text(fan_rpm_4_label, CUSTOM_SYMBOL_SOLID_FAN " FAN 4");
+    fan_4_status_led = lv_led_create(fan_status_container, NULL);
+    lv_obj_align(fan_4_status_led, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_size(fan_4_status_led, 16, 16);
 
-    fan_rpm_4 = lv_bar_create(h, NULL);
-    lv_obj_set_size(fan_rpm_4, 170, 20);
-    lv_bar_set_range(fan_rpm_4, 0, 10000);
-    lv_bar_set_anim_time(fan_rpm_4, 500);
-    lv_bar_set_value(fan_rpm_4, fans[3]->getCurrentRPM(), LV_ANIM_ON);
+    lv_obj_t *lamp_status_container = lv_cont_create(parent, NULL);
+    lv_cont_set_layout(lamp_status_container, LV_LAYOUT_PRETTY_TOP);
+    lv_obj_add_style(lamp_status_container, LV_CONT_PART_MAIN, &style_box);
+    lv_obj_set_drag_parent(lamp_status_container, true);
 
-    lv_obj_t *lamp_lm_1_label = lv_label_create(h, NULL);
-    lv_label_set_text(lamp_lm_1_label, CUSTOM_SYMBOL_SOLID_LIGHTBULB " LAMP 1");
+    lv_cont_set_fit2(lamp_status_container, LV_FIT_NONE, LV_FIT_TIGHT);
+    lv_obj_set_width(lamp_status_container, grid_w);
 
-    lamp_lm_1 = lv_bar_create(h, NULL);
-    lv_obj_set_size(lamp_lm_1, 150, 20);
-    lv_bar_set_range(lamp_lm_1, 0, 1);
-    lv_bar_set_anim_time(lamp_lm_1, 200);
-    lv_bar_set_value(lamp_lm_1, lamps[0]->getCurrentLumen(), LV_ANIM_ON);
+    lv_obj_t *lamp_1_status_label = lv_label_create(lamp_status_container, NULL);
+    lv_label_set_text(lamp_1_status_label, CUSTOM_SYMBOL_SOLID_LIGHTBULB " LAMP 1");
 
-    lv_obj_t *lamp_lm_2_label = lv_label_create(h, NULL);
-    lv_label_set_text(lamp_lm_2_label, CUSTOM_SYMBOL_SOLID_LIGHTBULB " LAMP 2");
+    lamp_1_status_led = lv_led_create(lamp_status_container, NULL);
+    lv_obj_align(lamp_1_status_led, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_size(lamp_1_status_led, 16, 16);
 
-    lamp_lm_2 = lv_bar_create(h, NULL);
-    lv_obj_set_size(lamp_lm_2, 150, 20);
-    lv_bar_set_range(lamp_lm_2, 0, 1);
-    lv_bar_set_anim_time(lamp_lm_2, 200);
-    lv_bar_set_value(lamp_lm_2, lamps[1]->getCurrentLumen(), LV_ANIM_ON);
+    lv_obj_t *lamp_2_status_label = lv_label_create(lamp_status_container, NULL);
+    lv_label_set_text(lamp_2_status_label, CUSTOM_SYMBOL_SOLID_LIGHTBULB " LAMP 2");
 
-    lv_obj_t *lamp_lm_3_label = lv_label_create(h, NULL);
-    lv_label_set_text(lamp_lm_3_label, CUSTOM_SYMBOL_SOLID_LIGHTBULB " LAMP 3");
+    lamp_2_status_led = lv_led_create(lamp_status_container, NULL);
+    lv_obj_align(lamp_2_status_led, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_size(lamp_2_status_led, 16, 16);
 
-    lamp_lm_3 = lv_bar_create(h, NULL);
-    lv_obj_set_size(lamp_lm_3, 150, 20);
-    lv_bar_set_range(lamp_lm_3, 0, 1);
-    lv_bar_set_anim_time(lamp_lm_3, 200);
-    lv_bar_set_value(lamp_lm_3, lamps[2]->getCurrentLumen(), LV_ANIM_ON);
+    lv_obj_t *lamp_3_status_label = lv_label_create(lamp_status_container, NULL);
+    lv_label_set_text(lamp_3_status_label, CUSTOM_SYMBOL_SOLID_LIGHTBULB " LAMP 3");
 
-    lv_obj_t *lamp_lm_4_label = lv_label_create(h, NULL);
-    lv_label_set_text(lamp_lm_4_label, CUSTOM_SYMBOL_SOLID_LIGHTBULB " LAMP 4");
+    lamp_3_status_led = lv_led_create(lamp_status_container, NULL);
+    lv_obj_align(lamp_3_status_led, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_size(lamp_3_status_led, 16, 16);
 
-    lamp_lm_4 = lv_bar_create(h, NULL);
-    lv_obj_set_size(lamp_lm_4, 150, 20);
-    lv_bar_set_range(lamp_lm_4, 0, 1);
-    lv_bar_set_anim_time(lamp_lm_4, 200);
-    lv_bar_set_value(lamp_lm_4, lamps[3]->getCurrentLumen(), LV_ANIM_ON);
+    lv_obj_t *lamp_4_status_label = lv_label_create(lamp_status_container, NULL);
+    lv_label_set_text(lamp_4_status_label, CUSTOM_SYMBOL_SOLID_LIGHTBULB " LAMP 4");
+
+    lamp_4_status_led = lv_led_create(lamp_status_container, NULL);
+    lv_obj_align(lamp_4_status_led, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_size(lamp_4_status_led, 16, 16);
 }
 
 static void create_info(lv_obj_t *parent)
@@ -300,15 +290,80 @@ static void sensor_updater(lv_task_t *t)
         break;
     }*/
 
-    lv_bar_set_value(fan_rpm_1, fans[0]->getCurrentRPM(), LV_ANIM_ON);
-    lv_bar_set_value(fan_rpm_2, fans[1]->getCurrentRPM(), LV_ANIM_ON);
-    lv_bar_set_value(fan_rpm_3, fans[2]->getCurrentRPM(), LV_ANIM_ON);
-    lv_bar_set_value(fan_rpm_4, fans[3]->getCurrentRPM(), LV_ANIM_ON);
+    gpio_expander.read8();
 
-    lv_bar_set_value(lamp_lm_1, lamps[0]->getCurrentLumen(), LV_ANIM_OFF);
-    lv_bar_set_value(lamp_lm_2, lamps[1]->getCurrentLumen(), LV_ANIM_OFF);
-    lv_bar_set_value(lamp_lm_3, lamps[2]->getCurrentLumen(), LV_ANIM_OFF);
-    lv_bar_set_value(lamp_lm_4, lamps[3]->getCurrentLumen(), LV_ANIM_OFF);
+    if (gpio_expander.read(0) == HIGH)
+    {
+        lv_led_on(fan_1_status_led);
+    }
+    else
+    {
+        lv_led_off(fan_1_status_led);
+    }
+
+    if (gpio_expander.read(1) == HIGH)
+    {
+        lv_led_on(fan_2_status_led);
+    }
+    else
+    {
+        lv_led_off(fan_2_status_led);
+    }
+
+    if (gpio_expander.read(2) == HIGH)
+    {
+        lv_led_on(fan_3_status_led);
+    }
+    else
+    {
+        lv_led_off(fan_3_status_led);
+    }
+
+    if (gpio_expander.read(3) == HIGH)
+    {
+        lv_led_on(lamp_1_status_led);
+    }
+    else
+    {
+        lv_led_off(lamp_1_status_led);
+    }
+    
+
+    if (gpio_expander.read(4) == HIGH)
+    {
+        lv_led_on(lamp_2_status_led);
+    }
+    else
+    {
+        lv_led_off(lamp_2_status_led);
+    }
+
+    if (gpio_expander.read(5) == HIGH)
+    {
+        lv_led_on(fan_2_status_led);
+    }
+    else
+    {
+        lv_led_off(lamp_3_status_led);
+    }
+
+    if (gpio_expander.read(6) == HIGH)
+    {
+        lv_led_on(lamp_3_status_led);
+    }
+    else
+    {
+        lv_led_off(fan_3_status_led);
+    }
+
+    if (gpio_expander.read(7) == HIGH)
+    {
+        lv_led_on(lamp_4_status_led);
+    }
+    else
+    {
+        lv_led_off(lamp_4_status_led);
+    }
 
     char now[25] = "";
     sprintf(now, "%d/%02d/%02d %02d:%02d", rtc.day(), rtc.month(), rtc.day(), rtc.hour(), rtc.minute());
