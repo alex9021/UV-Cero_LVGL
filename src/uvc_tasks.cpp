@@ -105,22 +105,21 @@ void guiTaskLoop(void *parameter)
 void sensorsTaskLoop(void *parameter)
 {
     gpio_expander.begin(I2C_ADDR_PCF);
+    gpio_expander.write8(LOW);
 
     for (;;)
     {
-        //gpio_expander.read8();
+        fans[0]->setState(gpio_expander.read(0) != LOW);
+        fans[1]->setState(gpio_expander.read(1) != LOW);
+        fans[2]->setState(gpio_expander.read(2) != LOW);
+        fans[3]->setState(gpio_expander.read(3) != LOW);
 
-        fans[0]->setCurrentRPM(gpio_expander.read(0));
-        fans[1]->setCurrentRPM(gpio_expander.read(1));
-        fans[2]->setCurrentRPM(gpio_expander.read(2));
-        fans[3]->setCurrentRPM(gpio_expander.read(3));
+        lamps[0]->setState(gpio_expander.read(4) != LOW);
+        lamps[1]->setState(gpio_expander.read(5) != LOW);
+        lamps[2]->setState(gpio_expander.read(6) != LOW);
+        lamps[3]->setState(gpio_expander.read(7) != LOW);
 
-        lamps[0]->setCurrentLumen(gpio_expander.read(4));
-        lamps[1]->setCurrentLumen(gpio_expander.read(5));
-        lamps[2]->setCurrentLumen(gpio_expander.read(6));
-        lamps[3]->setCurrentLumen(gpio_expander.read(7));
-
-        delay(200);
+        delay(500);
     }
 }
 

@@ -27,13 +27,13 @@ void init()
     // init lamps
     for (int i = 0; i < 4; i++)
     {
-        lamps[i] = new UVC_Lamp(i + 1, random(0, 10000), random(0, 10000), random(0, 10000), random(0, 1));
+        lamps[i] = new UVC_Lamp(i + 1, random(0, 10000), random(0, 10000), random(0, 10000), random(0, 1000), false);
     }
 
     // init fans
     for (int i = 0; i < 4; i++)
     {
-        fans[i] = new UVC_Fan(i + 1, random(0, 50000), random(0, 50000), random(0, 50000), random(0, 10000));
+        fans[i] = new UVC_Fan(i + 1, random(0, 50000), random(0, 50000), random(0, 50000), random(0, 10000), false);
     }
 
     currentTimerItemCount = 0;

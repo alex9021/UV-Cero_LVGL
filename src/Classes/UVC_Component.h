@@ -10,6 +10,7 @@ private:
   uint32_t _operatingLife;
   uint16_t _serviceLife;
   uint32_t _lastService;
+  bool _state;
 
 protected:
   void setId(uint8_t id);
@@ -18,13 +19,15 @@ protected:
   void setlastService(uint32_t lastService);
 
 public:
-  UVC_Component(uint8_t id, uint32_t operatingLife, uint16_t serviceLife, uint32_t lastService);
+  UVC_Component(uint8_t id, uint32_t operatingLife, uint16_t serviceLife, uint32_t lastService, bool state);
   ~UVC_Component();
   uint8_t getId();
   uint32_t getOperatingLife();
   uint16_t getServiceLife();
   uint32_t getlastService();
   uint32_t service(uint32_t currentTimeStamp);
+  bool getState();
+  void setState(bool state);
 };
 
 #endif /*UVC_COMPONENT_H*/

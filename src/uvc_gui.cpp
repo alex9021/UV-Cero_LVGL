@@ -268,9 +268,16 @@ static void sensor_updater(lv_task_t *t)
         break;
     }
 
-    gpio_expander.read8();
+    if (lamps[0]->getState())
+    {
+        lv_led_on(lamp_1_status_led);
+    }
+    else
+    {
+        lv_led_off(lamp_1_status_led);
+    }
 
-    if (gpio_expander.read(0) == HIGH)
+    if (lamps[1]->getState())
     {
         lv_led_on(lamp_2_status_led);
     }
@@ -279,25 +286,16 @@ static void sensor_updater(lv_task_t *t)
         lv_led_off(lamp_2_status_led);
     }
 
-    if (gpio_expander.read(1) == HIGH)
+    if (lamps[2]->getState())
     {
-        lv_led_on(fan_2_status_led);
+        lv_led_on(lamp_3_status_led);
     }
     else
     {
         lv_led_off(lamp_3_status_led);
     }
 
-    if (gpio_expander.read(2) == HIGH)
-    {
-        lv_led_on(lamp_3_status_led);
-    }
-    else
-    {
-        lv_led_off(fan_3_status_led);
-    }
-
-    if (gpio_expander.read(3) == HIGH)
+    if (lamps[3]->getState())
     {
         lv_led_on(lamp_4_status_led);
     }
@@ -305,8 +303,8 @@ static void sensor_updater(lv_task_t *t)
     {
         lv_led_off(lamp_4_status_led);
     }
-
-    if (gpio_expander.read(4) == LOW)
+    
+    if (fans[0]->getState())
     {
         lv_led_on(fan_1_status_led);
     }
@@ -314,8 +312,8 @@ static void sensor_updater(lv_task_t *t)
     {
         lv_led_off(fan_1_status_led);
     }
-
-    if (gpio_expander.read(5) == LOW)
+    
+    if (fans[1]->getState())
     {
         lv_led_on(fan_2_status_led);
     }
@@ -323,8 +321,8 @@ static void sensor_updater(lv_task_t *t)
     {
         lv_led_off(fan_2_status_led);
     }
-
-    if (gpio_expander.read(6) == LOW)
+    
+    if (fans[2]->getState())
     {
         lv_led_on(fan_3_status_led);
     }
@@ -332,14 +330,14 @@ static void sensor_updater(lv_task_t *t)
     {
         lv_led_off(fan_3_status_led);
     }
-
-    if (gpio_expander.read(7) == LOW)
+    
+    if (fans[3]->getState())
     {
-        lv_led_on(lamp_1_status_led);
+        lv_led_on(fan_4_status_led);
     }
     else
     {
-        lv_led_off(lamp_1_status_led);
+        lv_led_off(fan_4_status_led);
     }
 
     char now[25] = "";

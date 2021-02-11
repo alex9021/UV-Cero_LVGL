@@ -4,7 +4,8 @@ UVC_Fan::UVC_Fan(
     uint32_t operatingLife,
     uint16_t serviceLife,
     uint32_t lastService,
-    uint16_t currentRPM) : UVC_Component(id, operatingLife, serviceLife, lastService)
+    uint16_t currentRPM,
+    bool state) : UVC_Component(id, operatingLife, serviceLife, lastService, state)
 {
     setCurrentRPM(currentRPM);
 }

@@ -1,6 +1,6 @@
 #include <Classes/UVC_Component.h>
 
-UVC_Component::UVC_Component(uint8_t id, uint32_t operatingLife, uint16_t serviceLife, uint32_t lastService)
+UVC_Component::UVC_Component(uint8_t id, uint32_t operatingLife, uint16_t serviceLife, uint32_t lastService, bool state)
 {
     setId(id);
     setOperatingLife(operatingLife);
@@ -33,6 +33,11 @@ uint32_t UVC_Component::getlastService()
     return _serviceLife;
 }
 
+bool UVC_Component::getState()
+{
+    return _state;
+}
+
 uint32_t UVC_Component::service(uint32_t currentTimeStamp)
 {
     setOperatingLife(0);
@@ -58,4 +63,9 @@ void UVC_Component::setServiceLife(uint16_t serviceLife)
 void UVC_Component::setlastService(uint32_t lastService)
 {
     _lastService = lastService;
+}
+
+void UVC_Component::setState(bool state)
+{
+    _state = state;
 }
