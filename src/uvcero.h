@@ -18,11 +18,11 @@
 
 #define MAX_TIMER_COUNT 21
 
-#define FAN_CALIBRATED_OFF 0       /* 0/6 */
-#define FAN_CALIBRATED_LOW 43      /* 1/6 */
-#define FAN_CALIBRATED_MID 85      /* 2/6 */
-#define FAN_CALIBRATED_HIGH 128    /* 3/6 */
-#define FAN_CALIBRATED_FULL 255    /* 6/6 */
+#define FAN_CALIBRATED_OFF 0                /* 0/6 */
+#define FAN_CALIBRATED_LOW 119      //43    /* 1/6 */
+#define FAN_CALIBRATED_MID 135      //85    /* 2/6 */
+#define FAN_CALIBRATED_HIGH 157     //128   /* 3/6 */
+#define FAN_CALIBRATED_FULL 255             /* 6/6 */
 
 enum {
     FAN_SPEED_OFF,
@@ -77,4 +77,3 @@ extern lamp_state_t currentLampState;
 extern bool SD_CARD_AVAILABLE;
 
 #endif /*UVCERO_H*/
-

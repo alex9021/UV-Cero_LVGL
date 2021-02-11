@@ -104,21 +104,21 @@ void guiTaskLoop(void *parameter)
 
 void sensorsTaskLoop(void *parameter)
 {
-    //gpio_expander.begin(I2C_ADDR_PCF);
+    gpio_expander.begin(I2C_ADDR_PCF);
 
     for (;;)
     {
         //gpio_expander.read8();
 
-        fans[0]->setCurrentRPM(random(2450 * currentFanSpeed, 2500 * currentFanSpeed));
-        fans[1]->setCurrentRPM(random(2450 * currentFanSpeed, 2500 * currentFanSpeed));
-        fans[2]->setCurrentRPM(random(2450 * currentFanSpeed, 2500 * currentFanSpeed));
-        fans[3]->setCurrentRPM(random(2450 * currentFanSpeed, 2500 * currentFanSpeed));
+        fans[0]->setCurrentRPM(gpio_expander.read(0));
+        fans[1]->setCurrentRPM(gpio_expander.read(1));
+        fans[2]->setCurrentRPM(gpio_expander.read(2));
+        fans[3]->setCurrentRPM(gpio_expander.read(3));
 
-        lamps[0]->setCurrentLumen(random(0, 1));
-        lamps[1]->setCurrentLumen(random(0, 1));
-        lamps[2]->setCurrentLumen(random(0, 1));
-        lamps[3]->setCurrentLumen(random(0, 1));
+        lamps[0]->setCurrentLumen(gpio_expander.read(4));
+        lamps[1]->setCurrentLumen(gpio_expander.read(5));
+        lamps[2]->setCurrentLumen(gpio_expander.read(6));
+        lamps[3]->setCurrentLumen(gpio_expander.read(7));
 
         delay(200);
     }
@@ -127,7 +127,6 @@ void sensorsTaskLoop(void *parameter)
 void fanControllerTaskLoop(void *parameter)
 {
     ledcSetup(fanChannel, fanFreq, fanResolution);
-    ledcAttachPin(FAN_PWM_PIN, fanChannel);
     ledcWrite(fanChannel, FAN_CALIBRATED_HIGH);
 
     fan_speed_t newFanSpeed;
@@ -141,24 +140,28 @@ void fanControllerTaskLoop(void *parameter)
                 switch (newFanSpeed)
                 {
                 case FAN_SPEED_OFF:
+                    ledcDetachPin(FAN_PWM_PIN);
                     currentFanSpeed = FAN_SPEED_OFF;
                     ledcWrite(fanChannel, FAN_CALIBRATED_OFF);
                     Serial.println("Fan speed changed to OFF.");
                     break;
 
                 case FAN_SPEED_LOW:
+                    ledcAttachPin(FAN_PWM_PIN, fanChannel);
                     currentFanSpeed = FAN_SPEED_LOW;
                     ledcWrite(fanChannel, FAN_CALIBRATED_LOW);
                     Serial.println("Fan speed changed to LOW.");
                     break;
 
                 case FAN_SPEED_MEDIUM:
+                    ledcAttachPin(FAN_PWM_PIN, fanChannel);
                     currentFanSpeed = FAN_SPEED_MEDIUM;
                     ledcWrite(fanChannel, FAN_CALIBRATED_MID);
                     Serial.println("Fan speed changed to MEDIUM.");
                     break;
 
                 case FAN_SPEED_HIGH:
+                    ledcAttachPin(FAN_PWM_PIN, fanChannel);
                     currentFanSpeed = FAN_SPEED_HIGH;
                     ledcWrite(fanChannel, FAN_CALIBRATED_HIGH);
                     Serial.println("Fan speed changed to HIGH.");

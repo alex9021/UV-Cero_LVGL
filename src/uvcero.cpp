@@ -5,7 +5,7 @@ UVC_Fan *fans[4];
 UVC_Timer_Item* timerItems[MAX_TIMER_COUNT];
 int currentTimerItemCount;
 
-int fanFreq = 20000;
+int fanFreq = 25000;
 int fanChannel = 0;
 int fanResolution = 8;
 
