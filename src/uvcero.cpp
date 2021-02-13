@@ -20,6 +20,7 @@ void init()
     gpio_expander.write(5, HIGH);
     gpio_expander.write(6, HIGH);
     gpio_expander.write(7, HIGH);
+    
     /**
       @ToDo: read data from sd card
     **/
