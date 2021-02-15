@@ -172,14 +172,6 @@ void fanControllerTaskLoop(void *parameter)
     }
 }
 
-void lampControllerTaskLoop(void *parameter)
-{
-    for (;;)
-    {
-        delay(1000);
-    }
-}
-
 void rtcUpdaterTaskLoop(void *parameter)
 {
     rtc.set_rtc_address(I2C_ADDR_RTC);

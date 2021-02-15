@@ -216,7 +216,7 @@ static void create_info(lv_obj_t *parent)
 
     int config_operatingLife = config["operatingLife"];
     long config_lastService = config["lastService"];
-    int config_lastState = config["lastState"];
+    //int config_lastState = config["lastState"];
     const char *config_serial = config["serial"];
 
     Serial.println(config_operatingLife);
