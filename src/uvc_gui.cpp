@@ -213,6 +213,15 @@ static void create_info(lv_obj_t *parent)
 
     lv_cont_set_fit2(h, LV_FIT_NONE, LV_FIT_TIGHT);
     lv_obj_set_width(h, grid_w);
+
+    int config_operatingLife = config["operatingLife"];
+    long config_lastService = config["lastService"];
+    int config_lastState = config["lastState"];
+    const char *config_serial = config["serial"];
+
+    Serial.println(config_operatingLife);
+    Serial.println(config_lastService);
+    Serial.println(config_serial);
 }
 
 static void create_timer_controls(lv_obj_t *parent)

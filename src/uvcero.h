@@ -6,6 +6,8 @@
 #include <Classes\UVC_Fan.h>
 #include <Classes\UVC_Timer_Item.h>
 #include <pt_sans_regular_14_subpx.h>
+#include <uvc_filesystem.h>
+#include <ArduinoJson.h>
 
 #define LAMP_SWITCH_PIN 13
 #define FAN_PWM_PIN 15
@@ -75,5 +77,8 @@ extern fan_speed_t currentFanSpeed;
 extern lamp_state_t currentLampState;
 
 extern bool SD_CARD_AVAILABLE;
+
+extern DynamicJsonDocument doc;
+extern JsonObject config;
 
 #endif /*UVCERO_H*/
