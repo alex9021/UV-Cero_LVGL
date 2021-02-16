@@ -1,5 +1,7 @@
 #include <uvcero.h>
 
+#define ENABLE_I2C_SCANNER 1
+
 UVC_Lamp *lamps[4];
 UVC_Fan *fans[4];
 UVC_Timer_Item *timerItems[MAX_TIMER_COUNT];
@@ -20,7 +22,42 @@ JsonObject config;
 
 void init()
 {
+
     Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
+
+    if (ENABLE_I2C_SCANNER)
+    {
+        Serial.printf("========= I²C SCANNER ==========\n");
+        byte error, address;
+        int nDevices;
+        nDevices = 0;
+        for (address = 1; address < 127; address++)
+        {
+            Wire.beginTransmission(address);
+            error = Wire.endTransmission();
+
+            switch (error)
+            {
+            case 0:
+                Serial.printf("Device found at address 0x%2X\n", address);
+                break;
+
+            case 4:
+                Serial.printf("Unknown error at address 0x%2X\n", address);
+                break;
+
+            default:
+                break;
+            }
+            nDevices++;
+        }
+
+        if (nDevices == 0)
+        {
+            Serial.println("No I2C devices found\n");
+        }
+        Serial.printf("================================\n\n");        
+    }
 
     gpio_expander.write8(LOW);
 
