@@ -103,13 +103,13 @@ static void create_controls(lv_obj_t *parent)
     lv_obj_set_style_local_margin_top(fan_speed_label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_DPX(10));
 
     fan_speed_slider = lv_slider_create(h, NULL);
-    lv_slider_set_value(fan_speed_slider, FAN_SPEED_HIGH, LV_ANIM_ON);
+    lv_slider_set_value(fan_speed_slider, FAN_SPEED_OFF, LV_ANIM_ON);
     lv_slider_set_range(fan_speed_slider, FAN_SPEED_OFF, FAN_SPEED_HIGH);
     lv_obj_set_event_cb(fan_speed_slider, fan_speed_slider_event_cb);
     lv_obj_set_width_fit(h, lv_obj_get_width_fit(h));
 
     fan_speed_slider_label = lv_label_create(h, NULL);
-    lv_label_set_text(fan_speed_slider_label, "HIGH");
+    lv_label_set_text(fan_speed_slider_label, "OFF");
 
     lv_obj_set_style_local_margin_top(fan_speed_slider, LV_SLIDER_PART_BG, LV_STATE_DEFAULT, LV_DPX(5));
     lv_obj_set_style_local_value_font(fan_speed_slider, LV_SLIDER_PART_KNOB, LV_STATE_DEFAULT, lv_theme_get_font_small());
@@ -216,7 +216,6 @@ static void create_info(lv_obj_t *parent)
 
     int config_operatingLife = config["operatingLife"];
     long config_lastService = config["lastService"];
-    //int config_lastState = config["lastState"];
     const char *config_serial = config["serial"];
 
     Serial.println(config_operatingLife);
@@ -363,22 +362,22 @@ static void fan_speed_slider_event_cb(lv_obj_t *slider, lv_event_t event)
         switch (lv_slider_get_value(slider))
         {
         case FAN_SPEED_OFF:
-            updateLampState(LAMPS_OFF);
+            //updateLampState(LAMPS_OFF);
             updateFanSpeed(FAN_SPEED_OFF);
             break;
 
         case FAN_SPEED_LOW:
-            updateLampState(LAMPS_ON);
+            //updateLampState(LAMPS_ON);
             updateFanSpeed(FAN_SPEED_LOW);
             break;
 
         case FAN_SPEED_MEDIUM:
-            updateLampState(LAMPS_ON);
+            //updateLampState(LAMPS_ON);
             updateFanSpeed(FAN_SPEED_MEDIUM);
             break;
 
         case FAN_SPEED_HIGH:
-            updateLampState(LAMPS_ON);
+            //updateLampState(LAMPS_ON);
             updateFanSpeed(FAN_SPEED_HIGH);
             break;
         }
