@@ -8,7 +8,7 @@ TaskHandle_t thRTCUpdater;
 
 QueueHandle_t xFAN_SPEED;
 
-uint8_t currentFanSpeed = FAN_SPEED_HIGH;
+uint8_t currentFanSpeed = FAN_SPEED_OFF;
 uint8_t currentLampState = LAMPS_OFF;
 
 PCF8574 gpio_expander(I2C_ADDR_PCF);
@@ -47,17 +47,8 @@ bool my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
     {
         data->state = LV_INDEV_STATE_PR;
 
-        /*Set the coordinates*/
         data->point.x = touchX;
         data->point.y = touchY;
-
-        /*
-        Serial.print("Data x");
-        Serial.println(touchX);
-
-        Serial.print("Data y");
-        Serial.println(touchY);
-        */
     }
 
     return false; /*Return `false` because we are not buffering and no more data to read*/
@@ -104,8 +95,7 @@ void guiTaskLoop(void *parameter)
 
 void sensorsTaskLoop(void *parameter)
 {
-    gpio_expander.begin(I2C_ADDR_PCF);
-    gpio_expander.write8(LOW);
+    gpio_expander.begin();
 
     for (;;)
     {
@@ -126,7 +116,6 @@ void sensorsTaskLoop(void *parameter)
 void fanControllerTaskLoop(void *parameter)
 {
     ledcSetup(fanChannel, fanFreq, fanResolution);
-    ledcWrite(fanChannel, FAN_CALIBRATED_HIGH);
 
     fan_speed_t newFanSpeed;
 
@@ -142,6 +131,7 @@ void fanControllerTaskLoop(void *parameter)
                     ledcDetachPin(FAN_PWM_PIN);
                     currentFanSpeed = FAN_SPEED_OFF;
                     ledcWrite(fanChannel, FAN_CALIBRATED_OFF);
+                    updateLampState(LAMPS_OFF);
                     Serial.println("Fan speed changed to OFF.");
                     break;
 
@@ -149,6 +139,7 @@ void fanControllerTaskLoop(void *parameter)
                     ledcAttachPin(FAN_PWM_PIN, fanChannel);
                     currentFanSpeed = FAN_SPEED_LOW;
                     ledcWrite(fanChannel, FAN_CALIBRATED_LOW);
+                    updateLampState(LAMPS_ON);
                     Serial.println("Fan speed changed to LOW.");
                     break;
 
@@ -156,6 +147,7 @@ void fanControllerTaskLoop(void *parameter)
                     ledcAttachPin(FAN_PWM_PIN, fanChannel);
                     currentFanSpeed = FAN_SPEED_MEDIUM;
                     ledcWrite(fanChannel, FAN_CALIBRATED_MID);
+                    updateLampState(LAMPS_ON);
                     Serial.println("Fan speed changed to MEDIUM.");
                     break;
 
@@ -163,12 +155,12 @@ void fanControllerTaskLoop(void *parameter)
                     ledcAttachPin(FAN_PWM_PIN, fanChannel);
                     currentFanSpeed = FAN_SPEED_HIGH;
                     ledcWrite(fanChannel, FAN_CALIBRATED_HIGH);
+                    updateLampState(LAMPS_ON);
                     Serial.println("Fan speed changed to HIGH.");
                     break;
                 }
             }
         }
-        delay(5);
     }
 }
 
@@ -202,6 +194,6 @@ void rtcUpdaterTaskLoop(void *parameter)
     for (;;)
     {
         rtc.refresh();
-        delay(500);
+        delay(1000);
     }
 }
