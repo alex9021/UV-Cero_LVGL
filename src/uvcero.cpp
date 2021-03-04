@@ -14,7 +14,7 @@ int fanResolution = 8;
 bool SD_CARD_AVAILABLE = false;
 
 const char *configPath = "/config.json";
-const char *configTemplate = "{\"components\":{\"fans\":[{\"id\":0,\"operatingLife\":5000,\"serviceLife\":50000,\"lastService\":1613234089},{\"id\":1,\"operatingLife\":5000,\"serviceLife\":50000,\"lastService\":1613234089},{\"id\":2,\"operatingLife\":5000,\"serviceLife\":50000,\"lastService\":1613234089},{\"id\":3,\"operatingLife\":5000,\"serviceLife\":50000,\"lastService\":1613234089}],\"lamps\":[{\"id\":0,\"operatingLife\":1000,\"serviceLife\":20000,\"lastService\":1613234089},{\"id\":1,\"operatingLife\":1000,\"serviceLife\":20000,\"lastService\":1613234089},{\"id\":2,\"operatingLife\":1000,\"serviceLife\":20000,\"lastService\":1613234089},{\"id\":3,\"operatingLife\":1000,\"serviceLife\":20000,\"lastService\":1613234089}]},\"config\":{\"operatingLife\":100,\"lastService\":1613234089,\"lastState\":3,\"serial\":\"UVC-000-0000-001\",\"timers\":[{\"id\":0,\"weekday\":0,\"hour\":10,\"minute\":0,\"duration\":60,\"speed\":3,\"repeat\":2},{\"id\":1,\"weekday\":1,\"hour\":12,\"minute\":0,\"duration\":120,\"speed\":2,\"repeat\":3},{\"id\":2,\"weekday\":4,\"hour\":16,\"minute\":45,\"duration\":165,\"speed\":1,\"repeat\":0}]}}";
+const char *configTemplate = "{\"components\":{\"fans\":[{\"id\":0,\"operatingLife\":5000,\"serviceLife\":50000,\"lastService\":1613234089},{\"id\":1,\"operatingLife\":5000,\"serviceLife\":50000,\"lastService\":1613234089},{\"id\":2,\"operatingLife\":5000,\"serviceLife\":50000,\"lastService\":1613234089},{\"id\":3,\"operatingLife\":5000,\"serviceLife\":50000,\"lastService\":1613234089}],\"lamps\":[{\"id\":0,\"operatingLife\":1000,\"serviceLife\":20000,\"lastService\":1613234089},{\"id\":1,\"operatingLife\":1000,\"serviceLife\":20000,\"lastService\":1613234089},{\"id\":2,\"operatingLife\":1000,\"serviceLife\":20000,\"lastService\":1613234089},{\"id\":3,\"operatingLife\":1000,\"serviceLife\":20000,\"lastService\":1613234089}]},\"config\":{\"operatingLife\":100,\"lastService\":1613234089,\"lastState\":2,\"serial\":\"UVC-000-0000-001\",\"timers\":[{\"id\":0,\"weekday\":0,\"hour\":10,\"minute\":0,\"duration\":60,\"speed\":3,\"repeat\":2},{\"id\":1,\"weekday\":1,\"hour\":12,\"minute\":0,\"duration\":120,\"speed\":2,\"repeat\":3},{\"id\":2,\"weekday\":4,\"hour\":16,\"minute\":45,\"duration\":165,\"speed\":1,\"repeat\":0}]}}";
 
 DynamicJsonDocument doc(2048);
 File configFile;
@@ -56,7 +56,7 @@ void init()
         {
             Serial.println("No I2C devices found\n");
         }
-        Serial.printf("================================\n\n");        
+        Serial.printf("================================\n\n");
     }
 
     gpio_expander.write8(LOW);
@@ -71,7 +71,7 @@ void init()
     if (!SPIFFS.exists(configPath))
     {
         Serial.println("no config file found - creating one");
-        //deleteFile(SPIFFS, configPath); /* reset config by deleting config file */
+        deleteFile(SPIFFS, configPath); /* reset config by deleting config file */
         writeFile(SPIFFS, configPath, configTemplate);
     }
 
@@ -110,6 +110,30 @@ void init()
     }
 
     config = doc["config"];
+    
+    int config_lastState = config["lastState"];
+    switch (config_lastState)
+    {        
+    case FAN_SPEED_LOW:
+        currentFanSpeed = FAN_SPEED_LOW;
+        currentLampState = LAMPS_ON;
+        break;
+        
+    case FAN_SPEED_MEDIUM:
+        currentFanSpeed = FAN_SPEED_MEDIUM;
+        currentLampState = LAMPS_ON;
+        break;
+        
+    case FAN_SPEED_HIGH:
+        currentFanSpeed = FAN_SPEED_HIGH;
+        currentLampState = LAMPS_ON;
+        break;
+    
+    default:
+        currentFanSpeed = FAN_SPEED_OFF;
+        currentLampState = LAMPS_OFF;
+        break;
+    }
 
     // timer items
     currentTimerItemCount = 0;
