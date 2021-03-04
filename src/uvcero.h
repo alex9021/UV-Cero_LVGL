@@ -16,7 +16,7 @@
 #define I2C_SCL_PIN 22
 
 #define I2C_ADDR_RTC 0x68
-#define I2C_ADDR_PCF 0x71
+#define I2C_ADDR_PCF 0x38 //0x20 // 0x71
 
 #define MAX_TIMER_COUNT 21
 
