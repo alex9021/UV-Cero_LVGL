@@ -2,57 +2,57 @@
     "components": {
         "fans": [{
                 "id": 0,
-                "operatingLife": 5000,
+                "operatingLife": 0,
                 "serviceLife": 50000,
                 "lastService": 1613234089
             },
             {
                 "id": 1,
-                "operatingLife": 5000,
+                "operatingLife": 0,
                 "serviceLife": 50000,
                 "lastService": 1613234089
             },
             {
                 "id": 2,
-                "operatingLife": 5000,
+                "operatingLife": 0,
                 "serviceLife": 50000,
                 "lastService": 1613234089
             },
             {
                 "id": 3,
-                "operatingLife": 5000,
+                "operatingLife": 0,
                 "serviceLife": 50000,
                 "lastService": 1613234089
             }
         ],
         "lamps": [{
                 "id": 0,
-                "operatingLife": 1000,
+                "operatingLife": 0,
                 "serviceLife": 20000,
                 "lastService": 1613234089
             },
             {
                 "id": 1,
-                "operatingLife": 1000,
+                "operatingLife": 0,
                 "serviceLife": 20000,
                 "lastService": 1613234089
             },
             {
                 "id": 2,
-                "operatingLife": 1000,
+                "operatingLife": 0,
                 "serviceLife": 20000,
                 "lastService": 1613234089
             },
             {
                 "id": 3,
-                "operatingLife": 1000,
+                "operatingLife": 0,
                 "serviceLife": 20000,
                 "lastService": 1613234089
             }
         ]
     },
     "config": {
-        "operatingLife": 100,
+        "operatingLife": 0,
         "lastService": 1613234089,
         "lastState": 2,
         "timers": [{

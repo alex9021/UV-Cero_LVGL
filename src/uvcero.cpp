@@ -66,6 +66,11 @@ void init()
 
     gpio_expander.write8(LOW);
 
+    readConfig();
+}
+
+void readConfig()
+{
     // mount internal fs
     if (!SPIFFS.begin())
     {
@@ -206,8 +211,73 @@ void init()
         timerItems[currentTimerItemCount] = new UVC_Timer_Item(id, weekday, hour, minute, duration, repeat, speed);
         currentTimerItemCount++;
     }
+}
 
-    void saveConfig()
+void updateConfig()
+{
+    configFile = SPIFFS.open(configPath, "r");
+    DeserializationError error = deserializeJson(configDoc, configFile);
+    configFile.close();
+
+    if (error)
     {
+        Serial.print("deserializeJson() failed: ");
+        Serial.println(error.f_str());
+        return;
     }
+
+    //update fans operating time
+    for (JsonObject elem : configDoc["components"]["fans"].as<JsonArray>())
+    {
+        elem["operatingLife"] = (int)elem["operatingLife"] + 1;
+        //long lastService = elem["lastService"];
+    }
+
+    //update lamps operating time
+    for (JsonObject elem : configDoc["components"]["lamps"].as<JsonArray>())
+    {
+        elem["operatingLife"] = (int)elem["operatingLife"] + 1;
+        //long lastService = elem["lastService"];
+    }
+
+    //update device operating time
+    configDoc["config"]["operatingLife"] = (int)configDoc["config"]["operatingLife"] + 1;
+
+    //save current timers
+    // compute the required size
+    const size_t CAPACITY = JSON_ARRAY_SIZE(MAX_TIMER_COUNT);
+
+    // allocate the memory for the document
+    StaticJsonDocument<CAPACITY> doc;
+
+    // create an empty array
+    JsonArray newTimers = doc.to<JsonArray>();
+
+    for (int i = 0; i < currentTimerItemCount; i++)
+    {
+        JsonObject config_timer = newTimers.createNestedObject();
+        config_timer["id"] = i;
+        config_timer["weekday"] = timerItems[i]->getWeekday();
+        config_timer["hour"] = timerItems[i]->getHour();
+        config_timer["minute"] = timerItems[i]->getMinute();
+        config_timer["duration"] = timerItems[i]->getDuration();
+        config_timer["speed"] = timerItems[i]->getSpeed();
+        config_timer["repeat"] = timerItems[i]->getRepeat();
+
+        newTimers.add(config_timer);
+    }
+
+    config["timers"].set(newTimers);
+
+    char outputData[2048];
+    serializeJson(configDoc, outputData);
+    serializeJson(configDoc, Serial);
+
+    Serial.println("-----------------");
+
+    /*
+    configFile = SPIFFS.open(configPath, FILE_WRITE);
+    configFile.print(outputData);
+    configFile.close();
+    */
 }

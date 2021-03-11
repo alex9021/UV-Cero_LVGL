@@ -78,9 +78,12 @@ extern lamp_state_t currentLampState;
 
 extern bool SD_CARD_AVAILABLE;
 
-extern DynamicJsonDocument doc;
+extern DynamicJsonDocument configDoc;
 extern JsonObject config;
 
 extern const char* serialNo;
+
+void updateConfig();
+void readConfig();
 
 #endif /*UVCERO_H*/
