@@ -275,9 +275,7 @@ void updateConfig()
 
     Serial.println("-----------------");
 
-    /*
     configFile = SPIFFS.open(configPath, FILE_WRITE);
     configFile.print(outputData);
     configFile.close();
-    */
 }
