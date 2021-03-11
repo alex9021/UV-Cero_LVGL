@@ -216,11 +216,15 @@ static void create_info(lv_obj_t *parent)
 
     int config_operatingLife = config["operatingLife"];
     long config_lastService = config["lastService"];
-    const char *config_serial = config["serial"];
+    
+    Serial.print("serial Number: ");
+    Serial.println(serialNo);
 
+    Serial.print("operating life: ");
     Serial.println(config_operatingLife);
+
+    Serial.print("last service: ");
     Serial.println(config_lastService);
-    Serial.println(config_serial);
 }
 
 static void create_timer_controls(lv_obj_t *parent)

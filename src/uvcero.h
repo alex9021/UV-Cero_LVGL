@@ -81,4 +81,6 @@ extern bool SD_CARD_AVAILABLE;
 extern DynamicJsonDocument doc;
 extern JsonObject config;
 
+extern const char* serialNo;
+
 #endif /*UVCERO_H*/

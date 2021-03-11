@@ -14,10 +14,15 @@ int fanResolution = 8;
 bool SD_CARD_AVAILABLE = false;
 
 const char *configPath = "/config.json";
-const char *configTemplate = "{\"components\":{\"fans\":[{\"id\":0,\"operatingLife\":5000,\"serviceLife\":50000,\"lastService\":1613234089},{\"id\":1,\"operatingLife\":5000,\"serviceLife\":50000,\"lastService\":1613234089},{\"id\":2,\"operatingLife\":5000,\"serviceLife\":50000,\"lastService\":1613234089},{\"id\":3,\"operatingLife\":5000,\"serviceLife\":50000,\"lastService\":1613234089}],\"lamps\":[{\"id\":0,\"operatingLife\":1000,\"serviceLife\":20000,\"lastService\":1613234089},{\"id\":1,\"operatingLife\":1000,\"serviceLife\":20000,\"lastService\":1613234089},{\"id\":2,\"operatingLife\":1000,\"serviceLife\":20000,\"lastService\":1613234089},{\"id\":3,\"operatingLife\":1000,\"serviceLife\":20000,\"lastService\":1613234089}]},\"config\":{\"operatingLife\":100,\"lastService\":1613234089,\"lastState\":2,\"serial\":\"UVC-000-0000-001\",\"timers\":[{\"id\":0,\"weekday\":0,\"hour\":10,\"minute\":0,\"duration\":60,\"speed\":3,\"repeat\":2},{\"id\":1,\"weekday\":1,\"hour\":12,\"minute\":0,\"duration\":120,\"speed\":2,\"repeat\":3},{\"id\":2,\"weekday\":4,\"hour\":16,\"minute\":45,\"duration\":165,\"speed\":1,\"repeat\":0}]}}";
+const char *configTemplatePath = "/config.tpl.json";
+const char *serialPath = "/serial.json";
 
-DynamicJsonDocument doc(2048);
+const char *serialNo;
+
+DynamicJsonDocument configDoc(2048);
+DynamicJsonDocument serialDoc(128);
 File configFile;
+File serialFile;
 JsonObject config;
 
 void init()
@@ -61,34 +66,85 @@ void init()
 
     gpio_expander.write8(LOW);
 
-    // read config from file
-    if (!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED))
+    // mount internal fs
+    if (!SPIFFS.begin())
     {
         Serial.println("SPIFFS Mount Failed");
         return;
     }
 
+    //deleteFile(SPIFFS, configPath);
+
+    listDir(SPIFFS, "/", 2);
+
+    // check for serial
+    if (!SPIFFS.exists(serialPath))
+    {
+        Serial.println("no serial found!");
+        return;
+    }
+
+    // read serial
+    serialFile = SPIFFS.open(serialPath, FILE_READ);
+    DeserializationError err = deserializeJson(serialDoc, serialFile);
+
+    serialFile.close();
+
+    if (err)
+    {
+        Serial.print("read serial failed: ");
+        Serial.println(err.f_str());
+        return;
+    }
+
+    serialNo = serialDoc["serial"];
+    Serial.println(serialNo);
+
+    // check for config
     if (!SPIFFS.exists(configPath))
     {
         Serial.println("no config file found - creating one");
-        deleteFile(SPIFFS, configPath); /* reset config by deleting config file */
-        writeFile(SPIFFS, configPath, configTemplate);
+
+        // check for config template
+        if (!SPIFFS.exists(configTemplatePath))
+        {
+            Serial.println("no config template found!");
+            return;
+        }
+
+        configFile = SPIFFS.open(configTemplatePath, FILE_READ);
+        DeserializationError error = deserializeJson(configDoc, configFile);
+        configFile.close();
+
+        if (error)
+        {
+            Serial.print("deserializeJson() failed: ");
+            Serial.println(error.f_str());
+            return;
+        }
+
+        char outputData[2048];
+        serializeJson(configDoc, outputData);
+
+        configFile = SPIFFS.open(configPath, FILE_WRITE);
+        configFile.print(outputData);
+        configFile.close();
     }
 
     configFile = SPIFFS.open(configPath, "r");
-    DeserializationError error = deserializeJson(doc, configFile);
+    DeserializationError error = deserializeJson(configDoc, configFile);
     configFile.close();
-
-    listDir(SPIFFS, "/", 0);
 
     if (error)
     {
-        Serial.print(F("deserializeJson() failed: "));
+        Serial.print("deserializeJson() failed: ");
         Serial.println(error.f_str());
     }
 
+    config = configDoc["config"];
+
     // fans config
-    for (JsonObject elem : doc["components"]["fans"].as<JsonArray>())
+    for (JsonObject elem : configDoc["components"]["fans"].as<JsonArray>())
     {
         int id = elem["id"];                       // 0, 1, 2, 3
         int operatingLife = elem["operatingLife"]; // 5000, 5000, 5000, 5000
@@ -99,7 +155,7 @@ void init()
     }
 
     // lamps config
-    for (JsonObject elem : doc["components"]["lamps"].as<JsonArray>())
+    for (JsonObject elem : configDoc["components"]["lamps"].as<JsonArray>())
     {
         int id = elem["id"];
         int operatingLife = elem["operatingLife"];
@@ -109,26 +165,26 @@ void init()
         lamps[id] = new UVC_Lamp(id, operatingLife, serviceLife, lastService, 0, false);
     }
 
-    config = doc["config"];
-    
+    config = configDoc["config"];
+
     int config_lastState = config["lastState"];
     switch (config_lastState)
-    {        
+    {
     case FAN_SPEED_LOW:
         currentFanSpeed = FAN_SPEED_LOW;
         currentLampState = LAMPS_ON;
         break;
-        
+
     case FAN_SPEED_MEDIUM:
         currentFanSpeed = FAN_SPEED_MEDIUM;
         currentLampState = LAMPS_ON;
         break;
-        
+
     case FAN_SPEED_HIGH:
         currentFanSpeed = FAN_SPEED_HIGH;
         currentLampState = LAMPS_ON;
         break;
-    
+
     default:
         currentFanSpeed = FAN_SPEED_OFF;
         currentLampState = LAMPS_OFF;
@@ -149,5 +205,9 @@ void init()
 
         timerItems[currentTimerItemCount] = new UVC_Timer_Item(id, weekday, hour, minute, duration, repeat, speed);
         currentTimerItemCount++;
+    }
+
+    void saveConfig()
+    {
     }
 }
