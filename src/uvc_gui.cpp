@@ -214,17 +214,23 @@ static void create_info(lv_obj_t *parent)
     lv_cont_set_fit2(h, LV_FIT_NONE, LV_FIT_TIGHT);
     lv_obj_set_width(h, grid_w);
 
-    int config_operatingLife = config["operatingLife"];
-    long config_lastService = config["lastService"];
+    char config_operatingLife[] = "operating time: 10h"; //config["operatingLife"];
+    char config_lastService[] = "last service: 2021.01.21 21:21"; //config["lastService"];
+        
+    lv_obj_t *device_label = lv_label_create(h, NULL);
+    lv_label_set_text(device_label, "ReTecCom UV-Cero:");
     
-    Serial.print("serial Number: ");
-    Serial.println(serialNo);
-
-    Serial.print("operating life: ");
-    Serial.println(config_operatingLife);
-
-    Serial.print("last service: ");
-    Serial.println(config_lastService);
+    lv_obj_t *version_label = lv_label_create(h, NULL);
+    lv_label_set_text(version_label, "Software-Version: 1.0.0 RC1");
+    
+    lv_obj_t *serial_label = lv_label_create(h, NULL);
+    lv_label_set_text(serial_label, serialNo);
+        
+    lv_obj_t *service_label = lv_label_create(h, NULL);
+    lv_label_set_text(service_label, config_lastService);
+    
+    lv_obj_t *operating_label = lv_label_create(h, NULL);
+    lv_label_set_text(operating_label, config_operatingLife);
 }
 
 static void create_timer_controls(lv_obj_t *parent)
