@@ -6,7 +6,6 @@ void setup()
     digitalWrite(TFT_BL, LOW);
     digitalWrite(TFT_CS, HIGH);
     digitalWrite(TOUCH_CS, HIGH);
-    //digitalWrite(SD_CS, HIGH);
     pinMode(LAMP_SWITCH_PIN, OUTPUT);
     pinMode(FAN_PWM_PIN, OUTPUT);
 

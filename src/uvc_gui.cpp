@@ -29,6 +29,7 @@ static lv_obj_t *lamp_4_status_led;
 lv_obj_t *timerList;
 lv_obj_t *timerButtons[MAX_TIMER_COUNT];
 lv_obj_t *timeLabel;
+lv_obj_t *operating_label;
 
 static lv_style_t style_box;
 
@@ -214,22 +215,24 @@ static void create_info(lv_obj_t *parent)
     lv_cont_set_fit2(h, LV_FIT_NONE, LV_FIT_TIGHT);
     lv_obj_set_width(h, grid_w);
 
-    char config_operatingLife[] = "operating time: 10h"; //config["operatingLife"];
-    char config_lastService[] = "last service: 2021.01.21 21:21"; //config["lastService"];
-        
+    char config_operatingLife[32];
+    sprintf(config_operatingLife, "operating time: %.2fh", ((float)config["operatingLife"]) / 60);
+    char config_lastService[32];
+    sprintf(config_lastService, "last service: %d", (int)config["lastService"]);
+
     lv_obj_t *device_label = lv_label_create(h, NULL);
     lv_label_set_text(device_label, "ReTecCom UV-Cero:");
-    
+
     lv_obj_t *version_label = lv_label_create(h, NULL);
     lv_label_set_text(version_label, "Software-Version: 1.0.0 RC1");
-    
+
     lv_obj_t *serial_label = lv_label_create(h, NULL);
     lv_label_set_text(serial_label, serialNo);
-        
+
     lv_obj_t *service_label = lv_label_create(h, NULL);
     lv_label_set_text(service_label, config_lastService);
-    
-    lv_obj_t *operating_label = lv_label_create(h, NULL);
+
+    operating_label = lv_label_create(h, NULL);
     lv_label_set_text(operating_label, config_operatingLife);
 }
 
@@ -289,78 +292,98 @@ static void sensor_updater(lv_task_t *t)
     if (lamps[0]->getState())
     {
         lv_led_on(lamp_1_status_led);
+        lv_obj_set_style_local_bg_color(lamp_1_status_led, LV_LED_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
     }
     else
     {
-        lv_led_off(lamp_1_status_led);
+        lv_led_on(lamp_1_status_led);
+        lv_obj_set_style_local_bg_color(lamp_1_status_led, LV_LED_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
     }
 
     if (lamps[1]->getState())
     {
         lv_led_on(lamp_2_status_led);
+        lv_obj_set_style_local_bg_color(lamp_2_status_led, LV_LED_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
     }
     else
     {
-        lv_led_off(lamp_2_status_led);
+        lv_led_on(lamp_2_status_led);
+        lv_obj_set_style_local_bg_color(lamp_2_status_led, LV_LED_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
     }
 
     if (lamps[2]->getState())
     {
         lv_led_on(lamp_3_status_led);
+        lv_obj_set_style_local_bg_color(lamp_3_status_led, LV_LED_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
     }
     else
     {
-        lv_led_off(lamp_3_status_led);
+        lv_led_on(lamp_3_status_led);
+        lv_obj_set_style_local_bg_color(lamp_3_status_led, LV_LED_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
     }
 
     if (lamps[3]->getState())
     {
         lv_led_on(lamp_4_status_led);
+        lv_obj_set_style_local_bg_color(lamp_4_status_led, LV_LED_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
     }
     else
     {
-        lv_led_off(lamp_4_status_led);
+        lv_led_on(lamp_4_status_led);
+        lv_obj_set_style_local_bg_color(lamp_4_status_led, LV_LED_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
     }
-    
+
     if (fans[0]->getState())
     {
         lv_led_on(fan_1_status_led);
+        lv_obj_set_style_local_bg_color(fan_1_status_led, LV_LED_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
     }
     else
     {
-        lv_led_off(fan_1_status_led);
+        lv_led_on(fan_1_status_led);
+        lv_obj_set_style_local_bg_color(fan_1_status_led, LV_LED_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
     }
-    
+
     if (fans[1]->getState())
     {
         lv_led_on(fan_2_status_led);
+        lv_obj_set_style_local_bg_color(fan_2_status_led, LV_LED_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
     }
     else
     {
-        lv_led_off(fan_2_status_led);
+        lv_led_on(fan_2_status_led);
+        lv_obj_set_style_local_bg_color(fan_2_status_led, LV_LED_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
     }
-    
+
     if (fans[2]->getState())
     {
         lv_led_on(fan_3_status_led);
+        lv_obj_set_style_local_bg_color(fan_3_status_led, LV_LED_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
     }
     else
     {
-        lv_led_off(fan_3_status_led);
+        lv_led_on(fan_3_status_led);
+        lv_obj_set_style_local_bg_color(fan_3_status_led, LV_LED_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
     }
-    
+
     if (fans[3]->getState())
     {
         lv_led_on(fan_4_status_led);
+        lv_obj_set_style_local_bg_color(fan_4_status_led, LV_LED_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
     }
     else
     {
-        lv_led_off(fan_4_status_led);
+        lv_led_on(fan_4_status_led);
+        lv_obj_set_style_local_bg_color(fan_4_status_led, LV_LED_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
     }
 
     char now[25] = "";
     sprintf(now, "%d/%02d/%02d %02d:%02d", rtc.day(), rtc.month(), rtc.day(), rtc.hour(), rtc.minute());
     lv_label_set_text(timeLabel, now);
+
+    char config_operatingLife[32];
+    sprintf(config_operatingLife, "operating time: %.2fh", ((float)config["operatingLife"]) / 60);
+    lv_label_set_text(operating_label, config_operatingLife);
 }
 
 static void fan_speed_slider_event_cb(lv_obj_t *slider, lv_event_t event)
