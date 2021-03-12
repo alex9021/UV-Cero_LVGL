@@ -1,5 +1,18 @@
 # UV-Cero_LVGL
 
+## Funktionen
+
+- steuerung über touchscreen - done
+- laufzeitmessung gerät - done
+- laufzeitmessung lampen - done
+- laufzeitmessung lüfter - done
+- laufüberwachung lampen - done
+- laufüberwachung lüfter - done
+- seriennummer - done
+- zeitsteuerung - wip
+- bluetooth - nth
+- bacnet rs232 - nth
+
 ## kompilieren
 
 ### TFT_eSPI
