@@ -2,16 +2,18 @@
 
 ## Funktionen
 
-- steuerung über touchscreen - done
-- laufzeitmessung gerät - done
-- laufzeitmessung lampen - done
-- laufzeitmessung lüfter - done
-- laufüberwachung lampen - done
-- laufüberwachung lüfter - done
-- seriennummer - done
-- zeitsteuerung - wip
-- bluetooth - nth
-- bacnet rs232 - nth
+* steuerung über touchscreen
+* laufzeitmessung gerät
+* laufzeitmessung lampen
+* laufzeitmessung lüfter
+* laufüberwachung lampen
+* laufüberwachung lüfter
+* seriennummer
+* rtc + zeitsteuerung - *wip*
+* bluetooth - *nth*
+* bacnet rs232 - *nth*
+
+*wip* = work in progress, *nth* = nice to have
 
 ## kompilieren
 
@@ -28,5 +30,7 @@ Im Ordner **/data** befinden sich JSON-Dateien die dem SPIFFS Dateisystem beim e
 **serial.json** enthält die Seriennummer
 
 *Sidebar -> PlatformIO:*
+
 *esp32 -> Platform ->* **Build Filesystem Image**
+
 *esp32 -> Platform ->* **Upload Filesystem Image**
