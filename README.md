@@ -34,3 +34,23 @@ Im Ordner **/data** befinden sich JSON-Dateien die dem SPIFFS Dateisystem beim e
 *esp32 -> Platform ->* **Build Filesystem Image**
 
 *esp32 -> Platform ->* **Upload Filesystem Image**
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Bugs 
+
+RTC Uhr springt hin und her 
+PCF läuft nur bei lüfter üwa muss was rein das die ne immer blinken 
+
+Fan 4 geht fehler auf platine 
+
+Timer speichern ... fehler wie bekannt 
+
+Ein aus springen bei bewegung der Sliders 
+Service zeit sieht total komisch aus ... 
+
+
+
+
